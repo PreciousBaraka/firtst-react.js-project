@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
+  phoneNumber String
+  password String
+  role     UserRole @default(PATIENT)
+  // admissions Admission[]
+  // chatsSent Chat[] @relation("ChatSender")
+  // chatsReceived Chat[] @relation("ChatReceiver")
+  // postTreatmentRecord PostTreatmentRecord[]
+  // postTreatmentFeedback PostTreatmentFeedback[]
+  // medication Medication[]
+  // symptom Symptom[]
+}
+enum UserRole{
+  DOCTOR
+  PATIENT
+}
+
+// model Admission {
+//   id        Int    @id @default(autoincrement())
+//   userId    Int
+//   user      User   @relation(fields: [userId], references: [id])
+//   admittedAt DateTime @default(now())
+//   treatments TreatmentRecord[]
+// }
+
+// model TreatmentRecord {
+//   id         Int    @id @default(autoincrement())
+//   admissionId Int
+//   admission  Admission @relation(fields: [admissionId], references: [id])
+//   details    String
+//   createdAt  DateTime @default(now())
+// }
+
+// model PostTreatmentRecord {
+//   id         Int    @id @default(autoincrement())
+//   userId     Int
+//   user       User   @relation(fields: [userId], references: [id])
+//   details    String
+//   createdAt  DateTime @default(now())
+// }
+
+// model PostTreatmentFeedback {
+//   id         Int    @id @default(autoincrement())
+//   userId     Int
+//   user       User   @relation(fields: [userId], references: [id])
+//   feedback   String
+//   createdAt  DateTime @default(now())
+// }
+
+// model Medication {
+//   id        Int    @id @default(autoincrement())
+//   userId    Int
+//   user      User   @relation(fields: [userId], references: [id])
+//   name      String
+//   dosage    String
+//   frequency String
+//   startDate DateTime
+//   endDate   DateTime?
+// }
+
+// model Symptom {
+//   id        Int    @id @default(autoincrement())
+//   userId    Int
+//   user      User   @relation(fields: [userId], references: [id])
+//   description String
+//   recordedAt DateTime @default(now())
+// }
+
+// model Chat {
+//   id        Int    @id @default(autoincrement())
+//   senderId  Int
+//   receiverId Int
+//   message   String
+//   timestamp DateTime @default(now())
+//   sender    User @relation("ChatSender", fields: [senderId], references: [id])
+//   receiver  User @relation("ChatReceiver", fields: [receiverId], references: [id])
+// }
