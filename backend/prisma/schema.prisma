@@ -8,82 +8,96 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  name     String
-  email    String @unique
-  phoneNumber String
-  password String
-  role     UserRole @default(PATIENT)
-  // admissions Admission[]
-  // chatsSent Chat[] @relation("ChatSender")
-  // chatsReceived Chat[] @relation("ChatReceiver")
-  // postTreatmentRecord PostTreatmentRecord[]
-  // postTreatmentFeedback PostTreatmentFeedback[]
-  // medication Medication[]
-  // symptom Symptom[]
+  id           String   @id @default(uuid())
+  fullName     String
+  email        String   @unique
+  phoneNumber  String
+  password     String
+  type         UserType @default(PATIENT)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  isActive     Boolean  @default(true)
+  doctor       Doctor?
+  patient      Patient?
+
+  @@map("users")
 }
-enum UserRole{
+
+model Doctor {
+  id              String                 @default(uuid())
+  userId          String                 @unique
+  user            User                   @relation(fields: [userId], references: [id])
+  role            Role                   @relation(fields: [roleId], references: [id])
+  roleId          String
+  nationalIdNo String   @unique
+  specialization  SpecializationType
+  specializations DoctorSpecialization[] // Add this line
+
+  @@index([id])
+  @@map("doctors")
+}
+
+model Patient {
+  id     String @id @default(uuid())
+  userId String @unique
+  age    Int
+  nationalIdNo String   @unique
+  user   User   @relation(fields: [userId], references: [id])
+@@index([id])
+@@map("patients")
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        RoleType @unique @default(NORMAL)
+  description String
+  doctor      Doctor[]
+
+  @@index([id])
+  @@map("roles")
+}
+
+model Specialization {
+  id      String                 @id @default(uuid())
+  name    String                 @unique
+  doctors DoctorSpecialization[]
+
+  @@map("specializations")
+}
+
+model DoctorSpecialization {
+  doctorId         String
+  specializationId String
+
+  doctor         Doctor         @relation(fields: [doctorId], references: [userId])
+  specialization Specialization @relation(fields: [specializationId], references: [id])
+
+  @@id([doctorId, specializationId])
+  @@map("doctor_specializations")
+}
+
+enum SpecializationType {
+  GENERAL_SURGERY
+  NEUROSURGERY
+  ORTHOPEDIC_SURGERY
+  CARDIOTHORACIC_SURGERY
+  VASCULAR_SURGERY
+  PEDIATRIC_SURGERY
+  ENT_SURGERY
+  OPHTHALMIC_SURGERY
+  PLASTIC_SURGERY
+  UROLOGIC_SURGERY
+  TRAUMA_SURGERY
+  COLORECTAL_SURGERY
+  GYNECOLOGIC_SURGERY
+}
+
+enum RoleType {
+  NORMAL
+  MANAGER
+}
+
+enum UserType {
   DOCTOR
   PATIENT
 }
-
-// model Admission {
-//   id        Int    @id @default(autoincrement())
-//   userId    Int
-//   user      User   @relation(fields: [userId], references: [id])
-//   admittedAt DateTime @default(now())
-//   treatments TreatmentRecord[]
-// }
-
-// model TreatmentRecord {
-//   id         Int    @id @default(autoincrement())
-//   admissionId Int
-//   admission  Admission @relation(fields: [admissionId], references: [id])
-//   details    String
-//   createdAt  DateTime @default(now())
-// }
-
-// model PostTreatmentRecord {
-//   id         Int    @id @default(autoincrement())
-//   userId     Int
-//   user       User   @relation(fields: [userId], references: [id])
-//   details    String
-//   createdAt  DateTime @default(now())
-// }
-
-// model PostTreatmentFeedback {
-//   id         Int    @id @default(autoincrement())
-//   userId     Int
-//   user       User   @relation(fields: [userId], references: [id])
-//   feedback   String
-//   createdAt  DateTime @default(now())
-// }
-
-// model Medication {
-//   id        Int    @id @default(autoincrement())
-//   userId    Int
-//   user      User   @relation(fields: [userId], references: [id])
-//   name      String
-//   dosage    String
-//   frequency String
-//   startDate DateTime
-//   endDate   DateTime?
-// }
-
-// model Symptom {
-//   id        Int    @id @default(autoincrement())
-//   userId    Int
-//   user      User   @relation(fields: [userId], references: [id])
-//   description String
-//   recordedAt DateTime @default(now())
-// }
-
-// model Chat {
-//   id        Int    @id @default(autoincrement())
-//   senderId  Int
-//   receiverId Int
-//   message   String
-//   timestamp DateTime @default(now())
-//   sender    User @relation("ChatSender", fields: [senderId], references: [id])
-//   receiver  User @relation("ChatReceiver", fields: [receiverId], references: [id])
-// }
