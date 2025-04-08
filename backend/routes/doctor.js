@@ -19,4 +19,4 @@ doctorRouter.put(
   updateDoctor
 );
 
-export default staffRouter;
+export default doctorRouter;

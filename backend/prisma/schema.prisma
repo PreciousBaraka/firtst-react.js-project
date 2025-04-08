@@ -30,6 +30,7 @@ model Doctor {
   role            Role                   @relation(fields: [roleId], references: [id])
   roleId          String
   nationalIdNo String   @unique
+  admission Admission[]
   specialization  SpecializationType
   specializations DoctorSpecialization[] // Add this line
 
@@ -43,6 +44,8 @@ model Patient {
   age    Int
   nationalIdNo String   @unique
   user   User   @relation(fields: [userId], references: [id])
+  admission Admission[]
+  postTreatmentRecord PostTreatmentRecord[]
 @@index([id])
 @@map("patients")
 }
@@ -68,12 +71,67 @@ model Specialization {
 model DoctorSpecialization {
   doctorId         String
   specializationId String
-
+  specializationType SpecializationType @unique @default(GENERAL_SURGERY)
   doctor         Doctor         @relation(fields: [doctorId], references: [userId])
   specialization Specialization @relation(fields: [specializationId], references: [id])
 
   @@id([doctorId, specializationId])
   @@map("doctor_specializations")
+}
+model Admission {
+  id                  String           @id @default(uuid())
+  patientId           String
+  doctorId            String
+  timeIn              DateTime
+  dischargeAt         DateTime?
+  patientDescription  String
+  updatedAt           DateTime         @updatedAt
+  patient             Patient          @relation(fields: [patientId], references: [id])
+  doctor              Doctor           @relation(fields: [doctorId], references: [userId])
+  treatmentRecords    TreatmentRecord[]
+
+  @@map("admissions")
+}
+
+model TreatmentRecord {
+  id            String       @id @default(uuid())
+  admissionId   String
+  diagnosis     String
+  symptoms      String
+  prescription  String
+  time          DateTime
+
+  admission     Admission    @relation(fields: [admissionId], references: [id])
+  postTreatment PostTreatmentRecord?
+
+  @@map("treatment_records")
+}
+
+model PostTreatmentRecord {
+  id             String       @id @default(uuid())
+  treatmentId    String       @unique
+  patientId      String
+  postSymptoms   String
+  dateAndTime    DateTime
+  notes          String
+
+  treatment      TreatmentRecord  @relation(fields: [treatmentId], references: [id])
+  patient        Patient          @relation(fields: [patientId], references: [id])
+  feedback       PostTreatmentFeedback?
+
+  @@map("post_treatment_records")
+}
+
+model PostTreatmentFeedback {
+  id                   String     @id @default(uuid())
+  postTreatmentRecordId String    @unique
+  prescription         String
+  dateTime             DateTime
+  notes                String
+
+  postTreatmentRecord  PostTreatmentRecord @relation(fields: [postTreatmentRecordId], references: [id])
+
+  @@map("post_treatment_feedback")
 }
 
 enum SpecializationType {
