@@ -4,7 +4,11 @@ import userRouter from "./routes/user.js";
 import doctorRouter from "./routes/doctor.js";
 import patientRouter from "./routes/patient.js";
 import roleRouter from "./routes/roles.js";
-import doctorSpecializationrouter from "./routes/doctorSpecialization.js";
+import treatmentRecordRouter from "./routes/treatmentRecord.js";
+import hospitalVisitRouter from "./routes/hospitalVisits.js";
+import postTreatmentRecordRouter from "./routes/postTreatment.js";
+import patientQueryRouter from "./routes/patientQuery.js";
+import doctorResponseRouter from "./routes/doctorResponse.js";
 
 dotenv.config();
 const app = express();
@@ -19,8 +23,13 @@ app.get("/", (req, res) => {
 app.use("/api/roles", roleRouter);
 app.use("/api/users", userRouter);
 app.use("/api/doctor", doctorRouter);
-app.use("/api/doctor", doctorSpecializationrouter);
 app.use("/api/patient", patientRouter);
+app.use("/api/treatment-records", treatmentRecordRouter);
+app.use("/api/hospital-visits", hospitalVisitRouter);
+app.use("/api/post-treatment-records", postTreatmentRecordRouter);
+app.use("/api/patient-queries", patientQueryRouter);
+app.use("/api/doctor-responses", doctorResponseRouter);
+
 
 app.listen(5000, () => {
   console.log("Server is running on port 5000");

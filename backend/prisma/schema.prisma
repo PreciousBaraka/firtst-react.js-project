@@ -8,146 +8,193 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  fullName     String
-  email        String   @unique
-  phoneNumber  String
-  password     String
-  type         UserType @default(PATIENT)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  isActive     Boolean  @default(true)
-  doctor       Doctor?
-  patient      Patient?
+  id          String   @id @default(uuid())
+  fullName    String
+  email       String   @unique
+  phoneNumber String
+  type        UserType
 
   @@map("users")
 }
 
-model Doctor {
-  id              String                 @default(uuid())
-  userId          String                 @unique
-  user            User                   @relation(fields: [userId], references: [id])
-  role            Role                   @relation(fields: [roleId], references: [id])
-  roleId          String
-  nationalIdNo String   @unique
-  admission Admission[]
-  specialization  SpecializationType
-  specializations DoctorSpecialization[] // Add this line
-
-  @@index([id])
-  @@map("doctors")
-}
-
-model Patient {
-  id     String @id @default(uuid())
-  userId String @unique
-  age    Int
-  nationalIdNo String   @unique
-  user   User   @relation(fields: [userId], references: [id])
-  admission Admission[]
-  postTreatmentRecord PostTreatmentRecord[]
-@@index([id])
-@@map("patients")
-}
-
 model Role {
   id          String   @id @default(uuid())
-  name        RoleType @unique @default(NORMAL)
   description String
+  name        RoleType @unique @default(NORMAL)
   doctor      Doctor[]
 
   @@index([id])
   @@map("roles")
 }
 
-model Specialization {
-  id      String                 @id @default(uuid())
-  name    String                 @unique
-  doctors DoctorSpecialization[]
-
-  @@map("specializations")
-}
-
-model DoctorSpecialization {
-  doctorId         String
-  specializationId String
-  specializationType SpecializationType @unique @default(GENERAL_SURGERY)
-  doctor         Doctor         @relation(fields: [doctorId], references: [userId])
-  specialization Specialization @relation(fields: [specializationId], references: [id])
-
-  @@id([doctorId, specializationId])
-  @@map("doctor_specializations")
-}
-model Admission {
-  id                  String           @id @default(uuid())
-  patientId           String
-  doctorId            String
-  timeIn              DateTime
-  dischargeAt         DateTime?
-  patientDescription  String
-  updatedAt           DateTime         @updatedAt
-  patient             Patient          @relation(fields: [patientId], references: [id])
-  doctor              Doctor           @relation(fields: [doctorId], references: [userId])
+model Patient {
+  id                  String                @id @default(uuid())
+  fullName            String
+  email               String                @unique
+  phoneNumber         String
+  dateOfBirth         DateTime
+  gender              String
+  address             String
+  nationalIdNo        String                @unique
+  createdAt           DateTime              @default(now())
+  hospitalVisits      HospitalVisit[]
   treatmentRecords    TreatmentRecord[]
+  patientQueries      PatientQuery[]
+  postTreatmentRecord PostTreatmentRecord[]
 
-  @@map("admissions")
+  @@index([id])
+  @@map("patients")
+}
+
+model Doctor {
+  id                   String                @id @default(uuid())
+  fullName             String
+  email                String                @unique
+  phoneNumber          String
+  specialization       String
+  roleId               String
+  role                 Role?                 @relation(fields: [roleId], references: [id])
+  nationalIdNo         String                @unique
+  createdAt            DateTime              @default(now())
+  treatmentRecord      TreatmentRecord[]
+  hospitalVisits       HospitalVisit[]
+  postTreatmentRecords PostTreatmentRecord[]
+  doctorResponses      DoctorResponse[]
+
+  @@index([id, nationalIdNo])
+  @@index([roleId], map: "doctors_roleId_fkey")
+  @@map("doctors")
+}
+
+model Receptionist {
+  id             String          @id @default(uuid())
+  fullName       String
+  email          String          @unique
+  phoneNumber    String
+  nationalIdNo   String          @unique
+  createdAt      DateTime        @default(now())
+  hospitalVisits HospitalVisit[]
+
+  @@index([id])
+  @@map("receptionists")
+}
+
+model Manager {
+  id           String   @id @default(uuid())
+  fullName     String
+  email        String   @unique
+  phoneNumber  String
+  nationalIdNo String   @unique
+  createdAt    DateTime @default(now())
+
+  @@index([id])
+  @@map("managers")
+}
+
+model HospitalVisit {
+  id             String   @id @default(uuid())
+  patientId      String
+  receptionistId String
+  doctorId       String
+  visitDate      DateTime
+  reason         String
+  createdAt      DateTime @default(now())
+
+  treatmentRecord TreatmentRecord[]
+  patient         Patient           @relation(fields: [patientId], references: [id])
+  receptionist    Receptionist      @relation(fields: [receptionistId], references: [id])
+  doctor          Doctor            @relation(fields: [doctorId], references: [id])
+
+  @@index([id])
+  @@map("hospital_visits")
 }
 
 model TreatmentRecord {
-  id            String       @id @default(uuid())
-  admissionId   String
-  diagnosis     String
-  symptoms      String
-  prescription  String
-  time          DateTime
+  id              String          @id @default(uuid())
+  hospitalVisitId String
+  doctorId        String
+  vitals          String
+  treatmentPlan   String
+  painLevel       Int
+  mobility        String
+  symptoms        String
+  temperature     Float
+  patientId       String
+  status          TreatmentStatus @default(ACTIVE)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 
-  admission     Admission    @relation(fields: [admissionId], references: [id])
-  postTreatment PostTreatmentRecord?
+  hospitalVisit       HospitalVisit         @relation(fields: [hospitalVisitId], references: [id])
+  doctor              Doctor                @relation(fields: [doctorId], references: [id])
+  patient             Patient               @relation(fields: [patientId], references: [id])
+  postTreatmentRecord PostTreatmentRecord[]
+  patientQueries      PatientQuery[]
 
+  @@index([id])
   @@map("treatment_records")
 }
 
+model PatientQuery {
+  id                    String               @id @default(uuid())
+  patientId             String
+  doctorId              String
+  treatmentRecordId     String
+  message               String
+  status                PatientQueryStatus   @default(RESPONDED)
+  createdAt             DateTime             @default(now())
+  patient               Patient              @relation(fields: [patientId], references: [id])
+  treatmentRecord       TreatmentRecord      @relation(fields: [treatmentRecordId], references: [id])
+  postTreatmentRecord   PostTreatmentRecord? @relation(fields: [postTreatmentRecordId], references: [id])
+  doctorResponses       DoctorResponse[]
+  postTreatmentRecordId String?
+
+  @@index([id])
+  @@map("patient_queries")
+}
+
 model PostTreatmentRecord {
-  id             String       @id @default(uuid())
-  treatmentId    String       @unique
-  patientId      String
-  postSymptoms   String
-  dateAndTime    DateTime
-  notes          String
+  id                String   @id @default(uuid())
+  treatmentRecordId String
+  patientId         String
+  patientQueryId    String
+  doctorId          String
+  followUpPlan      String
+  observations      String
+  recoveryStatus    String
+  notes             String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
-  treatment      TreatmentRecord  @relation(fields: [treatmentId], references: [id])
-  patient        Patient          @relation(fields: [patientId], references: [id])
-  feedback       PostTreatmentFeedback?
+  treatmentRecord TreatmentRecord @relation(fields: [treatmentRecordId], references: [id])
+  patient         Patient         @relation(fields: [patientId], references: [id])
+  Doctor          Doctor          @relation(fields: [doctorId], references: [id])
+  PatientQuery    PatientQuery[]
 
+  @@index([id])
   @@map("post_treatment_records")
 }
 
-model PostTreatmentFeedback {
-  id                   String     @id @default(uuid())
-  postTreatmentRecordId String    @unique
-  prescription         String
-  dateTime             DateTime
-  notes                String
+model DoctorResponse {
+  id              String               @id @default(uuid())
+  patientQueryId  String
+  doctorId        String
+  responseMessage String
+  status          DoctorResponseStatus @default(PENDING)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
 
-  postTreatmentRecord  PostTreatmentRecord @relation(fields: [postTreatmentRecordId], references: [id])
+  patientQuery PatientQuery @relation(fields: [patientQueryId], references: [id])
+  doctor       Doctor       @relation(fields: [doctorId], references: [id])
 
-  @@map("post_treatment_feedback")
+  @@index([id])
+  @@map("doctor_responses")
 }
 
-enum SpecializationType {
-  GENERAL_SURGERY
-  NEUROSURGERY
-  ORTHOPEDIC_SURGERY
-  CARDIOTHORACIC_SURGERY
-  VASCULAR_SURGERY
-  PEDIATRIC_SURGERY
-  ENT_SURGERY
-  OPHTHALMIC_SURGERY
-  PLASTIC_SURGERY
-  UROLOGIC_SURGERY
-  TRAUMA_SURGERY
-  COLORECTAL_SURGERY
-  GYNECOLOGIC_SURGERY
+enum UserType {
+  PATIENT
+  DOCTOR
+  RECEPTIONIST
+  MANAGER
 }
 
 enum RoleType {
@@ -155,7 +202,20 @@ enum RoleType {
   MANAGER
 }
 
-enum UserType {
-  DOCTOR
-  PATIENT
+enum TreatmentStatus {
+  ACTIVE
+  COMPLETED
+  DISCHARGED
+}
+
+enum PatientQueryStatus {
+  PENDING
+  RESPONDED
+  CLOSED
+}
+
+enum DoctorResponseStatus {
+  PENDING
+  RESPONDED
+  CLOSED
 }

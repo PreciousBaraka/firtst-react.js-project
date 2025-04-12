@@ -1,10 +1,14 @@
 import Joi from "joi";
 
 export const postTreatmentRecordSchema = Joi.object({
-    treatmentId: Joi.string().uuid().required(),
-    patientId: Joi.string().uuid().required(),
-    postSymptoms: Joi.string().required(),
-    dateAndTime: Joi.date().required(),
-    notes: Joi.string().required(),
-  });
-  
+  treatmentRecordId: Joi.string().required(),
+  patientId: Joi.string().required(),
+  patientQueryId: Joi.string().required(),
+  doctorId: Joi.string().required(),
+  followUpPlan: Joi.string().required(),
+  observations: Joi.string().required(),
+  recoveryStatus: Joi.string().required(),
+  notes: Joi.string().allow(""),
+});
+
+

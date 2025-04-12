@@ -16,7 +16,7 @@ roleRouter.post(
   authorizeDoctor([RoleType.MANAGER]),
   createRole
 );
-roleRouter.get("/", authenticate, authorizeStaff([RoleType.MANAGER]), getRoles);
+roleRouter.get("/", authenticate, authorizeDoctor([RoleType.MANAGER]), getRoles);
 roleRouter.put(
   "/:id/edit",
   authenticate,

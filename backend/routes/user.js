@@ -1,6 +1,6 @@
 import express from "express";
-import {registerUser, loginUser, changeUserAccess} from ("../controllers/user.js");
-import { authenticate, authorizeDoctor } from "../middlewares/auth";
+import {registerUser, loginUser, changeUserAccess} from "../controllers/user.js";
+import { authenticate, authorizeDoctor } from "../middlewares/auth.js";
 import {RoleType} from "@prisma/client"
 
 const userRouter = express.Router();
