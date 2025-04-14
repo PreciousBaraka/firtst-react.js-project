@@ -8,11 +8,18 @@ datasource db {
 }
 
 model User {
-  id          String   @id @default(uuid())
-  fullName    String
-  email       String   @unique
-  phoneNumber String
-  type        UserType
+  id           String         @id @default(uuid())
+  fullName     String
+  email        String         @unique
+  phoneNumber  String
+  password     String
+  roleId       String
+  role         Role     @relation(fields: [roleId], references: [id])
+  doctor       Doctor[]
+  patient      Patient[]
+  receptionist Receptionist[]
+  isActive     Boolean        @default(true)
+  type         UserType
 
   @@map("users")
 }
@@ -22,6 +29,8 @@ model Role {
   description String
   name        RoleType @unique @default(NORMAL)
   doctor      Doctor[]
+  receptionist Receptionist[]
+  user User[]
 
   @@index([id])
   @@map("roles")
@@ -36,11 +45,13 @@ model Patient {
   gender              String
   address             String
   nationalIdNo        String                @unique
+  userId              String
   createdAt           DateTime              @default(now())
   hospitalVisits      HospitalVisit[]
   treatmentRecords    TreatmentRecord[]
   patientQueries      PatientQuery[]
   postTreatmentRecord PostTreatmentRecord[]
+  user                User                  @relation(fields: [userId], references: [id])
 
   @@index([id])
   @@map("patients")
@@ -53,7 +64,9 @@ model Doctor {
   phoneNumber          String
   specialization       String
   roleId               String
-  role                 Role?                 @relation(fields: [roleId], references: [id])
+  userId               String
+  user                 User                  @relation(fields: [userId], references: [id])
+  role                 Role                 @relation(fields: [roleId], references: [id])
   nationalIdNo         String                @unique
   createdAt            DateTime              @default(now())
   treatmentRecord      TreatmentRecord[]
@@ -72,7 +85,11 @@ model Receptionist {
   email          String          @unique
   phoneNumber    String
   nationalIdNo   String          @unique
+  userId         String
+  roleId         String
+  role           Role     @relation(fields: [roleId], references: [id])
   createdAt      DateTime        @default(now())
+  user           User            @relation(fields: [userId], references: [id])
   hospitalVisits HospitalVisit[]
 
   @@index([id])

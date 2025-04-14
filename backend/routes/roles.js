@@ -12,11 +12,14 @@ const roleRouter = express.Router();
 
 roleRouter.post(
   "/create",
-  authenticate,
-  authorizeDoctor([RoleType.MANAGER]),
+  // authenticate,
+  // authorizeDoctor([RoleType.MANAGER]),
   createRole
 );
-roleRouter.get("/", authenticate, authorizeDoctor([RoleType.MANAGER]), getRoles);
+roleRouter.get("/", 
+  // authenticate, 
+  // authorizeDoctor([RoleType.MANAGER]),
+   getRoles);
 roleRouter.put(
   "/:id/edit",
   authenticate,

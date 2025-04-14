@@ -44,6 +44,13 @@ export const registerUser = async (req, res) => {
 
       const patient = await prisma.patient.create({
         data: {
+          fullName,
+          email,
+          phoneNumber,
+          dateOfBirth,
+          gender,
+          address,
+          nationalIdNo,
           user: {
             create: {
               fullName,
@@ -51,14 +58,13 @@ export const registerUser = async (req, res) => {
               phoneNumber,
               password: hashedPassword,
               type: UserType.PATIENT,
+              isActive: true,
             },
           },
-          address,
-          gender,
-          dateOfBirth,
-          nationalIdNo,
         },
-        include: { user: true },
+        include: {
+          user: true,
+        },
       });
 
       return res.status(201).json(patient);
@@ -86,31 +92,34 @@ export const registerUser = async (req, res) => {
       }
 
       const existingUser = await prisma.user.findUnique({
-        where: { email }
+        where: { email },
       });
 
       if (existingUser) {
         return res.status(400).json({ message: "User already exists" });
       }
 
-      const hashedPassword = await bcrypt.hash(password, 10)
+      const hashedPassword = await bcrypt.hash(password, 10);
 
       const doctor = await prisma.doctor.create({
         data: {
+          fullName,
+          email,
+          phoneNumber,
+          nationalIdNo,
+          specialization,
+          role: {
+            connect: { id: roleId },
+          },
           user: {
             create: {
               fullName,
               email,
               phoneNumber,
-              whatsappNumber,
               password: hashedPassword,
               type: UserType.DOCTOR,
+              isActive: true,
             },
-          },
-          nationalIdNo,
-          specialization,
-          role: {
-            connect: { id: roleId },
           },
         },
         include: { user: true },
@@ -135,6 +144,10 @@ export const registerUser = async (req, res) => {
         whatsappNumber,
       } = value;
 
+      if (!roleId) {
+        return res.status(400).json({ message: "Role ID is required" });
+      }
+
       const role = await prisma.role.findUnique({ where: { id: roleId } });
       if (!role) {
         return res.status(404).json({ message: "Invalid role" });
@@ -152,19 +165,21 @@ export const registerUser = async (req, res) => {
 
       const receptionist = await prisma.receptionist.create({
         data: {
+          fullName, 
+          nationalIdNo,
+          email,
+          phoneNumber, 
+          role: {
+            connect: { id: roleId },
+          },
           user: {
             create: {
               fullName,
               email,
               phoneNumber,
-              whatsappNumber,
               password: hashedPassword,
               type: UserType.RECEPTIONIST,
             },
-          },
-          nationalIdNo,
-          role: {
-            connect: { id: roleId },
           },
         },
         include: { user: true },
@@ -189,13 +204,13 @@ export const loginUser = async (req, res) => {
   try {
     const existingUser = await prisma.user.findUnique({
       where: { email },
-      include: {
-        doctor: {
-          include: {
-            role: true,
-          },
-        },
-      },
+      // include: {
+      //   doctor: {
+      //     include: {
+      //       role: true,
+      //     },
+      //   },
+      // },
     });
 
     if (!existingUser) {

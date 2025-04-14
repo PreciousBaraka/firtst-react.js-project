@@ -8,14 +8,14 @@ const doctorRouter = express.Router();
 
 doctorRouter.get(
   "/",
-  authenticate,
-  authorizeDoctor([RoleType.MANAGER]),
+  // authenticate,
+  // authorizeDoctor([RoleType.MANAGER]),
   getDoctors
 );
 doctorRouter.put(
   "/:id/edit",
-  authenticate,
-  authorizeDoctor([RoleType.MANAGER]),
+  // authenticate,
+  // authorizeDoctor([RoleType.MANAGER]),
   updateDoctor
 );
 

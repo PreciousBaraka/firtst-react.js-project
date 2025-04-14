@@ -41,6 +41,7 @@ export const doctorSchema = Joi.object({
   phoneNumber: Joi.string()
     .pattern(/^[0-9]{10,15}$/)
     .required(),
+    password: Joi.string().min(6).required(),
   nationalIdNo: Joi.string().required(), // Only relevant to doctors
   specialization: Joi.string()
     .valid(
@@ -65,8 +66,8 @@ export const doctorEditSchema = Joi.object({
   fullName: Joi.string().min(3).max(100),
   email: Joi.string().email(),
   phoneNumber: Joi.string()
-    .pattern(/^[0-9]{10,15}$/)
-    .required(),
+    .pattern(/^[0-9]{10,15}$/),
+    password: Joi.string().min(6),
   nationalIdNo: Joi.string(), // Only relevant to doctors
   specialization: Joi.string().valid(
     "GENERAL_SURGERY",
@@ -89,13 +90,14 @@ export const doctorEditSchema = Joi.object({
 export const patientSchema = Joi.object({
   fullName: Joi.string().min(3).max(100).required(),
   email: Joi.string().email().required(),
+  password: Joi.string().min(6).required(),
   phoneNumber: Joi.string()
     .pattern(/^[0-9]{10,15}$/)
     .required(),
   dateOfBirth: Joi.date().required(),
-  gender: Joi.string().valid("Male", "Female", "Other").required(),
+  gender: Joi.string().valid("Male", "Female").required(),
   address: Joi.string().min(5).max(255).required(),
-  nationalIdNo: Joi.string().length(12).required(),
+  nationalIdNo: Joi.string().required(),
   createdAt: Joi.date().default(Date.now),
 });
 
@@ -103,10 +105,11 @@ export const patientEditSchema = Joi.object({
   fullName: Joi.string().min(3).max(100),
   email: Joi.string().email(),
   phoneNumber: Joi.string().pattern(/^[0-9]{10,15}$/),
-  dateOfBirth: Joi.date().required(),
-  gender: Joi.string().valid("Male", "Female", "Other").required(),
+  password: Joi.string().min(6),
+  dateOfBirth: Joi.date(),
+  gender: Joi.string().valid("Male", "Female"),
   address: Joi.string().min(5).max(255),
-  nationalIdNo: Joi.string().length(12),
+  nationalIdNo: Joi.string(),
   createdAt: Joi.date().default(Date.now),
 });
 
@@ -116,15 +119,19 @@ export const receptionistSchema = Joi.object({
   phoneNumber: Joi.string()
     .pattern(/^[0-9]{10,15}$/)
     .required(),
-  nationalIdNo: Joi.string().length(12).required(),
+  nationalIdNo: Joi.string().required(),
+  password: Joi.string().min(6).required(),
   createdAt: Joi.date().default(Date.now),
+  roleId: Joi.string().required(),
 });
 
 export const receptionEditistSchema = Joi.object({
   fullName: Joi.string().min(3).max(100),
   email: Joi.string().email(),
   phoneNumber: Joi.string().pattern(/^[0-9]{10,15}$/),
-  nationalIdNo: Joi.string().length(12),
+  nationalIdNo: Joi.string(),
+  password: Joi.string().min(6),
+  roleId: Joi.string(),
   createdAt: Joi.date().default(Date.now),
 });
 

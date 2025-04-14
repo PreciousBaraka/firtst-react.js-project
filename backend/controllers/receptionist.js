@@ -4,7 +4,7 @@ import { receptionEditistSchema } from "../schema/User.js";
 // Get all doctors with associated user and role info
 export const getReceptionists = async (req, res) => {
   try {
-    const receptionists = await prisma.receptionists.findMany({
+    const receptionists = await prisma.receptionist.findMany({
       include: {
         user: true,
         role: true,
@@ -13,7 +13,7 @@ export const getReceptionists = async (req, res) => {
     res.status(200).json(receptionists);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error fetching doctors", error });
+    res.status(500).json({ message: "Error fetching receptinist", error });
   }
 };
 

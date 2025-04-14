@@ -3,16 +3,13 @@ import { patientEditSchema } from "../schema/user.js";
 
 export const getPatients = async (req, res) => {
   try {
-    const doctor = await prisma.patient.findMany({
-      include: {
-        user: true,
-        role: true,
-      },
+    const patients = await prisma.patient.findMany({
+      include: { user: true },
     });
-    res.status(200).json(patient);
+    res.status(200).json(patients);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Error fetching patient", error });
+    res.status(500).json({ message: "Error fetching patients", error });
   }
 };
 
@@ -27,10 +24,7 @@ export const updatedPatient = async (req, res) => {
   try {
     const existingPatient = await prisma.patient.findUnique({
       where: { id },
-      include: {
-        user: true,
-        role: true,
-      },
+      include: { user: true },
     });
 
     if (!existingPatient) {
@@ -48,22 +42,19 @@ export const updatedPatient = async (req, res) => {
             password: value.password || existingPatient.user.password,
           },
         },
-        nationalIdNo: value.nationalIdNo || existingPatient.user.nationalIdNo,
-        role: {
-          connect: {
-            id: value.roleId || existingPatient.roleId,
-          },
-        },
+        nationalIdNo: value.nationalIdNo || existingPatient.nationalIdNo,
+        age:value.age || existingPatient.age,
+        address: value.address || existingPatient.address,
+        gender: value.gender || existingPatient.gender,
+        dateOfBirth: value.dateOfBirth || existingPatient.dateOfBirth
       },
       include: {
-        user: true,
-        role: true,
-      },
+        user: true },
     });
 
     res.status(200).json(updatedPatient);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Error updating receptionist", error });
+    res.status(500).json({ message: "Error updating patient", error });
   }
 };
