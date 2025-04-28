@@ -14,14 +14,13 @@ export const createTreatmentRecord = async (req, res) => {
 
     const {
       hospitalVisitId,
-      doctorId,
       vitals,
       treatmentPlan,
       painLevel,
       mobility,
       symptoms,
       temperature,
-      patientId,
+      status,
     } = value;
 
     const hospitalVisit = await prisma.hospitalVisit.findUnique({
@@ -31,31 +30,17 @@ export const createTreatmentRecord = async (req, res) => {
       return res.status(404).json({ message: "Hospital visit not found" });
     }
 
-    const doctor = await prisma.doctor.findUnique({
-      where: { id: doctorId },
-    });
-    if (!doctor) {
-      return res.status(404).json({ message: "Doctor not found" });
-    }
-
-    const patient = await prisma.patient.findUnique({
-      where: { id: patientId },
-    });
-    if (!patient) {
-      return res.status(404).json({ message: "Patient not found" });
-    }
 
     const newTreatmentRecord = await prisma.treatmentRecord.create({
       data: {
         hospitalVisitId,
-        doctorId,
         vitals,
         treatmentPlan,
         painLevel,
         mobility,
         symptoms,
         temperature,
-        patientId,
+        status
       },
     });
 
@@ -75,8 +60,6 @@ export const getTreatmentRecordById = async (req, res) => {
       where: { id },
       include: {
         hospitalVisit: true,
-        doctor: true,
-        patient: true,
       },
     });
 

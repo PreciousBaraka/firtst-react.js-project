@@ -10,11 +10,13 @@ import postTreatmentRecordRouter from "./routes/postTreatment.js";
 import patientQueryRouter from "./routes/patientQuery.js";
 import doctorResponseRouter from "./routes/doctorResponse.js";
 import receptionistRouter from "./routes/receptionist.js";
+import cors from "cors"
 
 dotenv.config();
 const app = express();
 
 app.use(express.json());
+app.use(cors())
 
 app.get("/", (req, res) => {
   res.send("The app is running");

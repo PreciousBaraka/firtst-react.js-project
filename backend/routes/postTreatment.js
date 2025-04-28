@@ -8,7 +8,7 @@ import {
 
 const postTreatmentRecordRouter = express.Router();
 
-postTreatmentRecordRouter.post("/", createPostTreatmentRecord);
+postTreatmentRecordRouter.post("/create", createPostTreatmentRecord);
 postTreatmentRecordRouter.get("/:id", getPostTreatmentRecordById);
 postTreatmentRecordRouter.put("/:id", updatePostTreatmentRecord);
 postTreatmentRecordRouter.get("/", getAllPostTreatmentRecords);

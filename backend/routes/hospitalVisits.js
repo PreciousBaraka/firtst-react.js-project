@@ -8,7 +8,7 @@ import {
 
 const hospitalVisitRouter = express.Router();
 
-hospitalVisitRouter.post("/", createHospitalVisit);
+hospitalVisitRouter.post("/create", createHospitalVisit);
 hospitalVisitRouter.get("/", getAllHospitalVisits);
 hospitalVisitRouter.get("/:id", getHospitalVisitById);
 hospitalVisitRouter.put("/:id", updateHospitalVisit);

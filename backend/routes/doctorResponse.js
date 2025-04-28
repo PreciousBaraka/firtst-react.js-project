@@ -3,7 +3,7 @@ import { createDoctorResponse, getDoctorResponseById, updateDoctorResponse } fro
 
 const doctorResponseRouter = express.Router();
 
-doctorResponseRouter.post("/", createDoctorResponse);
+doctorResponseRouter.post("/create", createDoctorResponse);
 doctorResponseRouter.get("/:id", getDoctorResponseById);
 doctorResponseRouter.put("/:id", updateDoctorResponse);
 

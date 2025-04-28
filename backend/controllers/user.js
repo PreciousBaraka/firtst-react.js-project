@@ -44,13 +44,6 @@ export const registerUser = async (req, res) => {
 
       const patient = await prisma.patient.create({
         data: {
-          fullName,
-          email,
-          phoneNumber,
-          dateOfBirth,
-          gender,
-          address,
-          nationalIdNo,
           user: {
             create: {
               fullName,
@@ -58,9 +51,12 @@ export const registerUser = async (req, res) => {
               phoneNumber,
               password: hashedPassword,
               type: UserType.PATIENT,
-              isActive: true,
             },
           },
+          nationalIdNo,
+          dateOfBirth,
+          gender,
+          address,
         },
         include: {
           user: true,
@@ -86,7 +82,10 @@ export const registerUser = async (req, res) => {
         roleId,
       } = value;
 
-      const role = await prisma.role.findUnique({ where: { id: roleId } });
+      const role = await prisma.role.findUnique({
+         where: { 
+          id: roleId 
+        } });
       if (!role) {
         return res.status(404).json({ message: "Invalid role" });
       }
@@ -103,14 +102,6 @@ export const registerUser = async (req, res) => {
 
       const doctor = await prisma.doctor.create({
         data: {
-          fullName,
-          email,
-          phoneNumber,
-          nationalIdNo,
-          specialization,
-          role: {
-            connect: { id: roleId },
-          },
           user: {
             create: {
               fullName,
@@ -118,7 +109,13 @@ export const registerUser = async (req, res) => {
               phoneNumber,
               password: hashedPassword,
               type: UserType.DOCTOR,
-              isActive: true,
+            },
+          },
+          specialization,
+          nationalIdNo,
+          role: {
+            connect: {
+              id: roleId,
             },
           },
         },
@@ -134,15 +131,8 @@ export const registerUser = async (req, res) => {
         return res.status(400).json({ message: error.details[0].message });
       }
 
-      const {
-        fullName,
-        email,
-        phoneNumber,
-        password,
-        roleId,
-        nationalIdNo,
-        whatsappNumber,
-      } = value;
+      const { fullName, email, phoneNumber, password, roleId, nationalIdNo } =
+        value;
 
       if (!roleId) {
         return res.status(400).json({ message: "Role ID is required" });
@@ -153,7 +143,7 @@ export const registerUser = async (req, res) => {
         return res.status(404).json({ message: "Invalid role" });
       }
 
-      const existingUser = await prisma.receptionist.findUnique({
+      const existingUser = await prisma.user.findUnique({
         where: { email },
       });
 
@@ -165,13 +155,6 @@ export const registerUser = async (req, res) => {
 
       const receptionist = await prisma.receptionist.create({
         data: {
-          fullName, 
-          nationalIdNo,
-          email,
-          phoneNumber, 
-          role: {
-            connect: { id: roleId },
-          },
           user: {
             create: {
               fullName,
@@ -180,6 +163,10 @@ export const registerUser = async (req, res) => {
               password: hashedPassword,
               type: UserType.RECEPTIONIST,
             },
+          },
+          nationalIdNo,
+          role: {
+            connect: { id: roleId },
           },
         },
         include: { user: true },
@@ -204,13 +191,6 @@ export const loginUser = async (req, res) => {
   try {
     const existingUser = await prisma.user.findUnique({
       where: { email },
-      // include: {
-      //   doctor: {
-      //     include: {
-      //       role: true,
-      //     },
-      //   },
-      // },
     });
 
     if (!existingUser) {
@@ -274,6 +254,9 @@ export const changeUserAccess = async (req, res) => {
           },
         },
         patient: true,
+        receptionist: {
+          include: { role: true },
+        },
       },
     });
 

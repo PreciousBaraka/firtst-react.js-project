@@ -1,18 +1,34 @@
-import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
-import Home from './pages/Home';
-import PatientDashboard from './pages/PatientDashboard';
-import NotFound from './pages/NotFound';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import Home from "./pages/Home"
+import Dashboard from "./pages/Dashboard"
+import Login from "./pages/Login";
+import DashboardLayout from "./Layout";
+import HospitalVisits from "./pages/HospitalVisits";
+import TreatmentRecord from "./pages/TreatmentRecord";
+import Receptionist from "./pages/Receptionist";
+import Patients from "./pages/Patients";
+import Doctors from "./pages/Doctors";
+import PostTreatment from "./pages/PostTreatment";
 
 function App() {
-  return(
+
+  return (
     <Router>
       <Routes>
         <Route path='/' element={<Home />} />
-        <Route path='/patient-dashboard' element={<PatientDashboard />} />
-        <Route path='*' element={<NotFound />} />
+        <Route path='/login' element={<Login />} />
+        <Route element={<DashboardLayout />}>
+          <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/hospital-visits' element={<HospitalVisits />} />
+          <Route path='/treatment-records' element={<TreatmentRecord />} />
+          <Route path='/receptionists' element={<Receptionist />} />
+          <Route path='/patients' element={<Patients />} />
+          <Route path='/doctors' element={<Doctors />} />
+          <Route path='/post-treatment' element={<PostTreatment />} />
+        </Route>
       </Routes>
     </Router>
-  )
+  );
 }
 
-export default App;
+export default App

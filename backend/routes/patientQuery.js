@@ -8,7 +8,7 @@ import {
 
 const patientQueryRouter = express.Router();
 
-patientQueryRouter.post("/", createPatientQuery);
+patientQueryRouter.post("/create", createPatientQuery);
 patientQueryRouter.get("/", getPatientQueries);
 patientQueryRouter.get("/:id", getPatientQueryById);
 patientQueryRouter.put("/:id", updatePatientQuery);

@@ -38,8 +38,7 @@ export const updateDoctor = async (req, res) => {
     if (!existingDoctor) {
       return res.status(404).json({ message: "Doctor not found" });
     }
-
-    const updatedDoctor = await prisma.doctor.update({
+const updatedDoctor = await prisma.doctor.update({
       where: { id },
       data: {
         user: {

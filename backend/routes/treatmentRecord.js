@@ -3,9 +3,9 @@ import { createTreatmentRecord, getTreatmentRecordById, updateTreatmentRecord } 
 
 const treatmentRecordRouter = express.Router();
 
-treatmentRecordRouter.post('/treatment-record', createTreatmentRecord);
-treatmentRecordRouter.get('/treatment-record/:id', getTreatmentRecordById);
-treatmentRecordRouter.put('/treatment-record/:id', updateTreatmentRecord);
+treatmentRecordRouter.post('/create', createTreatmentRecord);
+treatmentRecordRouter.get('/:id', getTreatmentRecordById);
+treatmentRecordRouter.put('/:id', updateTreatmentRecord);
 
 
 export default treatmentRecordRouter;

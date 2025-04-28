@@ -1,1 +1,9 @@
 @import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+  --color-cement-100: #dddddd;
+  --color-cement-200: #a9a9a9;
+  /* --color-magenta: #FA8072; */
+  --color-magenta: #54aad1;
+}

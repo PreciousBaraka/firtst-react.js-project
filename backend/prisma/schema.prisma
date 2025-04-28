@@ -8,29 +8,26 @@ datasource db {
 }
 
 model User {
-  id           String         @id @default(uuid())
+  id           String        @id @default(uuid())
   fullName     String
-  email        String         @unique
+  email        String        @unique
   phoneNumber  String
   password     String
-  roleId       String
-  role         Role     @relation(fields: [roleId], references: [id])
-  doctor       Doctor[]
-  patient      Patient[]
-  receptionist Receptionist[]
-  isActive     Boolean        @default(true)
-  type         UserType
+  doctor       Doctor?
+  patient      Patient?
+  receptionist Receptionist?
+  isActive     Boolean       @default(true)
+  usertype     UserType @default(PATIENT)
 
   @@map("users")
 }
 
 model Role {
-  id          String   @id @default(uuid())
-  description String
-  name        RoleType @unique @default(NORMAL)
-  doctor      Doctor[]
+  id           String         @id @default(uuid())
+  description  String
+  name         RoleType       @unique @default(NORMAL)
+  doctor       Doctor[]
   receptionist Receptionist[]
-  user User[]
 
   @@index([id])
   @@map("roles")
@@ -38,17 +35,13 @@ model Role {
 
 model Patient {
   id                  String                @id @default(uuid())
-  fullName            String
-  email               String                @unique
-  phoneNumber         String
   dateOfBirth         DateTime
   gender              String
   address             String
   nationalIdNo        String                @unique
-  userId              String
+  userId              String                @unique
   createdAt           DateTime              @default(now())
   hospitalVisits      HospitalVisit[]
-  treatmentRecords    TreatmentRecord[]
   patientQueries      PatientQuery[]
   postTreatmentRecord PostTreatmentRecord[]
   user                User                  @relation(fields: [userId], references: [id])
@@ -59,20 +52,16 @@ model Patient {
 
 model Doctor {
   id                   String                @id @default(uuid())
-  fullName             String
-  email                String                @unique
-  phoneNumber          String
   specialization       String
   roleId               String
-  userId               String
+  userId               String                @unique
+  role                 Role                  @relation(fields: [roleId], references: [id])
   user                 User                  @relation(fields: [userId], references: [id])
-  role                 Role                 @relation(fields: [roleId], references: [id])
   nationalIdNo         String                @unique
   createdAt            DateTime              @default(now())
-  treatmentRecord      TreatmentRecord[]
-  hospitalVisits       HospitalVisit[]
   postTreatmentRecords PostTreatmentRecord[]
   doctorResponses      DoctorResponse[]
+  treatmentRecord      TreatmentRecord[]
 
   @@index([id, nationalIdNo])
   @@index([roleId], map: "doctors_roleId_fkey")
@@ -81,13 +70,10 @@ model Doctor {
 
 model Receptionist {
   id             String          @id @default(uuid())
-  fullName       String
-  email          String          @unique
-  phoneNumber    String
   nationalIdNo   String          @unique
-  userId         String
+  userId         String          @unique
+  role           Role            @relation(fields: [roleId], references: [id])
   roleId         String
-  role           Role     @relation(fields: [roleId], references: [id])
   createdAt      DateTime        @default(now())
   user           User            @relation(fields: [userId], references: [id])
   hospitalVisits HospitalVisit[]
@@ -98,9 +84,6 @@ model Receptionist {
 
 model Manager {
   id           String   @id @default(uuid())
-  fullName     String
-  email        String   @unique
-  phoneNumber  String
   nationalIdNo String   @unique
   createdAt    DateTime @default(now())
 
@@ -112,7 +95,6 @@ model HospitalVisit {
   id             String   @id @default(uuid())
   patientId      String
   receptionistId String
-  doctorId       String
   visitDate      DateTime
   reason         String
   createdAt      DateTime @default(now())
@@ -120,7 +102,6 @@ model HospitalVisit {
   treatmentRecord TreatmentRecord[]
   patient         Patient           @relation(fields: [patientId], references: [id])
   receptionist    Receptionist      @relation(fields: [receptionistId], references: [id])
-  doctor          Doctor            @relation(fields: [doctorId], references: [id])
 
   @@index([id])
   @@map("hospital_visits")
@@ -136,14 +117,12 @@ model TreatmentRecord {
   mobility        String
   symptoms        String
   temperature     Float
-  patientId       String
   status          TreatmentStatus @default(ACTIVE)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
   hospitalVisit       HospitalVisit         @relation(fields: [hospitalVisitId], references: [id])
   doctor              Doctor                @relation(fields: [doctorId], references: [id])
-  patient             Patient               @relation(fields: [patientId], references: [id])
   postTreatmentRecord PostTreatmentRecord[]
   patientQueries      PatientQuery[]
 
@@ -211,7 +190,6 @@ enum UserType {
   PATIENT
   DOCTOR
   RECEPTIONIST
-  MANAGER
 }
 
 enum RoleType {

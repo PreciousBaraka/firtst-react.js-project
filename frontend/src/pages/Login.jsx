@@ -1,91 +1,80 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import CustomFormItem from "../components/CustomFormItem";
+import CustomButton from "../components/CustomButton";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../redux/actions/userActions";
 
-function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const handleSubmit = async (e) => {
+const Login = () => {
+  const dispatch = useDispatch();
+  const {loading, error, userInfo} = useSelector((state) => state.user) 
+  const navigate = useNavigate();
+  const [userData, setUserData] = useState({
+    email: "",
+    password: "",
+  });
+  const [validationError, setValidationError] = useState(null);
+
+  const handleChange = (e) => {
+    setUserData((prev) => {
+      return {
+        ...prev,
+        [e.target.name]: e.target.value,
+      };
+    });
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    // console.log({ email, password });
-
-    try {
-      const response = await fetch("http://localhost:8081/users/login", {
-        method: "POST",
-        body: JSON.stringify({email, password}),
-        headers: { "Content-Type": "application/json" },
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed");
-      }
-      console.log(data)
-
-      // setSuccessMessage("Registration successful! Redirecting to login...");
-      // setTimeout(() => navigate("/login"), 3000); // Redirect after 3 seconds
-    } catch (error) {
-      console.log(error)
-      // setErrorMessage(error.message);
-    } finally {
-      // setLoading(false);
+    setValidationError(null);
+    if (!userData.email || !userData.password) {
+      setValidationError("Please all the Fields");
+      return;
     }
+    dispatch(login(userData));
   };
-  const handleShowPassword = (e) => {
-    setShowPassword(e.target.checked)
-  };
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/dashboard")
+    }
+  }, [userInfo, navigate])
+
   return (
-    <div className="flex h-screen justify-center items-center bg-gray-200">
-      <div className="bg-white p-4 w-full md:w-1/3">
-        <h1> Login to your Account</h1>
-        <form onSubmit={handleSubmit}>
-          <div className=" flex flex-col space-y-1 mb-3">
-            <label htmlFor="email" className="text-gray-800 font-semibold">
-              Email
-            </label>
-            <input
-              type="text"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              id="email"
-              placeholder="Email"
-              className="border border-gray-300 p-2 rounded-md focus:outline-none"
-            />
-          </div>
-          <div className=" flex flex-col space-y-1 mb-3">
-            <label htmlFor="password" className="text-gray-800 font-semibold">
-              Password
-            </label>
-            <input
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              id="password"
-              placeholder="*******"
-              className="border border-gray-300 p-2 rounded-md focus:outline-none"
-            />
-          </div>
-          <div className=" flex space-x-2 items-center">
-            <input
-              type="checkbox"
-              onChange={ handleShowPassword}
-              id="show-password"
-              className=" h-4 border border-gray-300 p-2 rounded-md focus:outline-none"
-            />
-            <label
-              htmlFor="show-password"
-              className="text-gray-800 font-semibold"
-            >
-              Show Password
-            </label>
-          </div>
-          <button className="bg-red-500 text-white w-full mt-3 border rounded-md py-2 ">
-            Submit
-          </button>
-        </form>
-      </div>
+    <div className="h-screen w-full bg-cement-100 flex items-center justify-center">
+      <form
+        action=""
+        className="lg:w-1/3 bg-white rounded-md p-4 "
+        onSubmit={handleSubmit}
+      >
+        <h2 className="text-blue-700 text-xl font-semibold text-center my-3">
+          Login to Post Operative Assistance App
+        </h2>
+        {loading && <p>Loading...</p>}
+        {(validationError || error) && (
+          <p className="text-red-500 text-sm bg-red-300 p-2 rounded-md">
+            {validationError || error}
+          </p>
+        )}
+        <CustomFormItem
+          label="Email"
+          name="email"
+          value={userData.email}
+          onChange={handleChange}
+          placeholder="Type your email"
+        />
+        <CustomFormItem
+          label="Password"
+          type="password"
+          name="password"
+          value={userData.password}
+          onChange={handleChange}
+          placeholder="********"
+        />
+        <CustomButton type="submit" title="Login" />
+      </form>
     </div>
   );
-}
+};
 
 export default Login;

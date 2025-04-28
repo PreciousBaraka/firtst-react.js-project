@@ -1,5 +1,8 @@
 import { prisma } from "../config/db.js";
-import { hospitalVisitEditSchema, hospitalVisitSchema } from "../schema/hospitalVisits.js";
+import {
+  hospitalVisitEditSchema,
+  hospitalVisitSchema,
+} from "../schema/hospitalVisits.js";
 
 export const createHospitalVisit = async (req, res) => {
   try {
@@ -9,22 +12,24 @@ export const createHospitalVisit = async (req, res) => {
     }
 
     const { visitDate, reason } = value;
-    const { patientId, doctorId, receptionistId } = req.query;
+    const { patientId, receptionistId } = req.query;
 
     // Validate required foreign keys
-    if (!patientId || !doctorId || !receptionistId) {
+    if (!patientId || !receptionistId) {
       return res.status(400).json({ message: "Missing required parameters" });
     }
 
     // Ensure all linked entities exist
-    const [patient, doctor, receptionist] = await Promise.all([
+    const [patient, receptionist, doctor] = await Promise.all([
       prisma.patient.findUnique({ where: { id: patientId } }),
-      prisma.doctor.findUnique({ where: { id: doctorId } }),
       prisma.receptionist.findUnique({ where: { id: receptionistId } }),
     ]);
 
-    if (!patient || !doctor || !receptionist) {
-      return res.status(404).json({ message: "Invalid credentials" });
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+    if (!receptionist) {
+      return res.status(404).json({ message: "Receptionist not found" });
     }
 
     // Create the hospital visit
@@ -33,13 +38,17 @@ export const createHospitalVisit = async (req, res) => {
         visitDate: new Date(visitDate),
         reason,
         patient: { connect: { id: patientId } },
-        doctor: { connect: { id: doctorId } },
         receptionist: { connect: { id: receptionistId } },
+      },
+      include: {
+        patient: true,
+        receptionist: true,
       },
     });
 
     res.status(201).json(newVisit);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -48,9 +57,16 @@ export const getAllHospitalVisits = async (req, res) => {
   try {
     const visits = await prisma.hospitalVisit.findMany({
       include: {
-        patient: true,
-        doctor: true,
-        receptionist: true,
+        patient: {
+          include: {
+            user: true,
+          },
+        },
+        receptionist:{
+          include:{
+            user:true
+          }
+        }
       },
       orderBy: {
         visitDate: "desc",
@@ -71,7 +87,6 @@ export const getHospitalVisitById = async (req, res) => {
       where: { id },
       include: {
         patient: true,
-        doctor: true,
         receptionist: true,
       },
     });
@@ -85,7 +100,6 @@ export const getHospitalVisitById = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 export const updateHospitalVisit = async (req, res) => {
   try {
@@ -111,4 +125,3 @@ export const updateHospitalVisit = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
