@@ -11,7 +11,7 @@ export const createHospitalVisit = async (req, res) => {
       return res.status(400).json({ message: error.details[0].message });
     }
 
-    const { visitDate, reason } = value;
+    const { reason } = value;
     const { patientId, receptionistId } = req.query;
 
     // Validate required foreign keys
@@ -20,7 +20,7 @@ export const createHospitalVisit = async (req, res) => {
     }
 
     // Ensure all linked entities exist
-    const [patient, receptionist, doctor] = await Promise.all([
+    const [patient, receptionist] = await Promise.all([
       prisma.patient.findUnique({ where: { id: patientId } }),
       prisma.receptionist.findUnique({ where: { id: receptionistId } }),
     ]);
@@ -35,14 +35,33 @@ export const createHospitalVisit = async (req, res) => {
     // Create the hospital visit
     const newVisit = await prisma.hospitalVisit.create({
       data: {
-        visitDate: new Date(visitDate),
         reason,
         patient: { connect: { id: patientId } },
         receptionist: { connect: { id: receptionistId } },
       },
       include: {
-        patient: true,
-        receptionist: true,
+        patient:{
+          include:{
+            user:{
+              select:{
+                fullName,
+                email,
+                phoneNumber
+              }
+            }
+          }
+        },
+        receptionist: {
+          include:{
+            user:{
+              select:{
+                fullName,
+                email,
+                phoneNumber
+              }
+            }
+          }
+        },
       },
     });
 
@@ -62,11 +81,11 @@ export const getAllHospitalVisits = async (req, res) => {
             user: true,
           },
         },
-        receptionist:{
-          include:{
-            user:true
-          }
-        }
+        receptionist: {
+          include: {
+            user: true,
+          },
+        },
       },
       orderBy: {
         visitDate: "desc",
@@ -86,8 +105,33 @@ export const getHospitalVisitById = async (req, res) => {
     const visit = await prisma.hospitalVisit.findUnique({
       where: { id },
       include: {
-        patient: true,
+        patient: {
+          include: {
+            user: {
+              select: {
+                fullName,
+                email,
+                phoneNumber,
+              },
+            },
+          },
+        },
         receptionist: true,
+        treatmentRecord: {
+          include: {
+            doctor: {
+              include: {
+                user: {
+                  select: {
+                    fullName,
+                    email,
+                    phoneNumber,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
 

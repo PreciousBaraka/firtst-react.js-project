@@ -161,7 +161,7 @@ export const registerUser = async (req, res) => {
               email,
               phoneNumber,
               password: hashedPassword,
-              type: UserType.RECEPTIONIST,
+              usertype: UserType.RECEPTIONIST,
             },
           },
           nationalIdNo,

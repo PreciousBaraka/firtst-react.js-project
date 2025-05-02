@@ -9,6 +9,7 @@ import Receptionist from "./pages/Receptionist";
 import Patients from "./pages/Patients";
 import Doctors from "./pages/Doctors";
 import PostTreatment from "./pages/PostTreatment";
+import HospitalVisitDetails from "./pages/HospitalVisitDetails";
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
         <Route element={<DashboardLayout />}>
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/hospital-visits' element={<HospitalVisits />} />
+          <Route path='/hospital-visits/:id' element={<HospitalVisitDetails />} />
           <Route path='/treatment-records' element={<TreatmentRecord />} />
           <Route path='/receptionists' element={<Receptionist />} />
           <Route path='/patients' element={<Patients />} />

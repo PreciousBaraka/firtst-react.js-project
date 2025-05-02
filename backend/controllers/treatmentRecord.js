@@ -13,34 +13,57 @@ export const createTreatmentRecord = async (req, res) => {
     }
 
     const {
-      hospitalVisitId,
-      vitals,
       treatmentPlan,
-      painLevel,
-      mobility,
       symptoms,
-      temperature,
       status,
     } = value;
 
-    const hospitalVisit = await prisma.hospitalVisit.findUnique({
-      where: { id: hospitalVisitId },
-    });
-    if (!hospitalVisit) {
-      return res.status(404).json({ message: "Hospital visit not found" });
+    const { hospitalVisitId, doctorId } = req.query;
+
+    if (!hospitalVisitId || !doctorId) {
+      return res.status(400).json({ message: "Missing required parameters" });
     }
 
+    // Ensure all linked entities exist
+    const [hospitalVisit, doctor] = await Promise.all([
+      prisma.hospitalVisit.findUnique({
+        where: { id: hospitalVisitId },
+        include: { patient: true },
+      }),
+      prisma.doctor.findUnique({ where: { id: doctorId } }),
+    ]);
 
+    if (!hospitalVisit) {
+      return res.status(404).json({ message: "Hospital Visit not found" });
+    }
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
     const newTreatmentRecord = await prisma.treatmentRecord.create({
       data: {
-        hospitalVisitId,
-        vitals,
         treatmentPlan,
-        painLevel,
-        mobility,
         symptoms,
-        temperature,
-        status
+        status,
+        doctor: { connect: { id: doctorId } },
+        hospitalVisit: { connect: { id: hospitalVisitId } },
+      },
+      include: {
+        doctor: true,
+        hospitalVisit: {
+          include: {
+            patient: {
+              include: {
+                user: {
+                  select: {
+                    fullName: true,
+                    phoneNumber: true,
+                    email: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
 

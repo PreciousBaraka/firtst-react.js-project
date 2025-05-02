@@ -1,7 +1,6 @@
 import Joi from 'joi';
 
 export const treatmentRecordSchema = Joi.object({
-  hospitalVisitId: Joi.string().required(),
   vitals: Joi.string().required(),
   treatmentPlan: Joi.string().required(),
   painLevel: Joi.number().integer().min(0).max(10).required(),
@@ -12,7 +11,6 @@ export const treatmentRecordSchema = Joi.object({
 });
 
 export const treatmentRecordEditSchema = Joi.object({
-  hospitalVisitId: Joi.string(),
   vitals: Joi.string(),
   treatmentPlan: Joi.string(),
   painLevel: Joi.number().integer(),

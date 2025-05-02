@@ -17,7 +17,7 @@ model User {
   patient      Patient?
   receptionist Receptionist?
   isActive     Boolean       @default(true)
-  usertype     UserType @default(PATIENT)
+  usertype     UserType      @default(PATIENT)
 
   @@map("users")
 }
@@ -95,13 +95,12 @@ model HospitalVisit {
   id             String   @id @default(uuid())
   patientId      String
   receptionistId String
-  visitDate      DateTime
   reason         String
   createdAt      DateTime @default(now())
 
-  treatmentRecord TreatmentRecord[]
-  patient         Patient           @relation(fields: [patientId], references: [id])
-  receptionist    Receptionist      @relation(fields: [receptionistId], references: [id])
+  treatmentRecord TreatmentRecord?
+  patient         Patient          @relation(fields: [patientId], references: [id])
+  receptionist    Receptionist     @relation(fields: [receptionistId], references: [id])
 
   @@index([id])
   @@map("hospital_visits")
@@ -109,14 +108,10 @@ model HospitalVisit {
 
 model TreatmentRecord {
   id              String          @id @default(uuid())
-  hospitalVisitId String
+  hospitalVisitId String          @unique
   doctorId        String
-  vitals          String
   treatmentPlan   String
-  painLevel       Int
-  mobility        String
   symptoms        String
-  temperature     Float
   status          TreatmentStatus @default(ACTIVE)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
