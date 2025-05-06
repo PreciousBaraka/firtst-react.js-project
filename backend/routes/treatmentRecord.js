@@ -5,7 +5,7 @@ const treatmentRecordRouter = express.Router();
 
 treatmentRecordRouter.post('/create', createTreatmentRecord);
 treatmentRecordRouter.get('/:id', getTreatmentRecordById);
-treatmentRecordRouter.put('/:id', updateTreatmentRecord);
+treatmentRecordRouter.put('/:id/update', updateTreatmentRecord);
 
 
 export default treatmentRecordRouter;

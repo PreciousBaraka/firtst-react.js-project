@@ -4,6 +4,7 @@ const hospitalVisitSlice = createSlice({
   name: "hospitalVisit",
   initialState: {
     hospitalVisits: [],
+    hospitalVisitDetails: null,
     loading: false,
     success: false,
     error: null,
@@ -20,6 +21,10 @@ const hospitalVisitSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    getHospitalVisitDetailsSuccess: (state, action) => {
+      state.loading = false;
+      state.hospitalVisitDetails = action.payload;
+    },
     createHospitalVisitRequest: (state) => {
       state.loading = true;
     },
@@ -33,6 +38,10 @@ const hospitalVisitSlice = createSlice({
     },
     clearHospitalVisitErrors: (state) => {
       state.error = null;
+    },
+    createTreatmentRecordSuccess: (state) => {
+      state.loading = false;
+      state.success = true;
     },
     resetHospitalVisitSuccess: (state) => {
       state.success = false;
@@ -49,6 +58,8 @@ export const {
   createHospitalVisitFail,
   clearHospitalVisitErrors,
   resetHospitalVisitSuccess,
+  getHospitalVisitDetailsSuccess,
+  createTreatmentRecordSuccess
 } = hospitalVisitSlice.actions;
 
 export default hospitalVisitSlice.reducer;

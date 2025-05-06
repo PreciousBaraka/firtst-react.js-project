@@ -191,6 +191,11 @@ export const loginUser = async (req, res) => {
   try {
     const existingUser = await prisma.user.findUnique({
       where: { email },
+      include: {
+        patient: true,
+        receptionist: true,
+        doctor:true
+      },
     });
 
     if (!existingUser) {
@@ -211,24 +216,21 @@ export const loginUser = async (req, res) => {
       return res.status(403).json({ message: "Account is deactivated" });
     }
 
-    let role = "PATIENT";
-    if (existingUser.type === UserType.DOCTOR) {
-      role = existingUser.doctor?.role?.name || "DOCTOR";
-    }
 
     const user = {
       id: existingUser.id,
       fullName: existingUser.fullName,
       email: existingUser.phoneNumber,
-      type: existingUser.type,
       isActive: existingUser.isActive,
-      role,
+      role: existingUser.usertype,
+      patientId: existingUser.patient?.id || null,
+      receptionistId: existingUser.receptionist?.id || null,
+      doctorId: existingUser.doctor?.id || null,
     };
 
     const token = generateToken(user);
     return res.status(200).json({ token, user });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ message: "Something went wrong" });
   }
 };

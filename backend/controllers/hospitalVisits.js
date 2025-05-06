@@ -94,13 +94,7 @@ export const getHospitalVisitById = async (req, res) => {
       include: {
         patient: {
           include: {
-            user: {
-              select: {
-                fullName,
-                email,
-                phoneNumber,
-              },
-            },
+            user: true,
           },
         },
         receptionist: true,
@@ -108,13 +102,7 @@ export const getHospitalVisitById = async (req, res) => {
           include: {
             doctor: {
               include: {
-                user: {
-                  select: {
-                    fullName,
-                    email,
-                    phoneNumber,
-                  },
-                },
+                user: true,
               },
             },
           },
@@ -128,6 +116,7 @@ export const getHospitalVisitById = async (req, res) => {
 
     res.status(200).json(visit);
   } catch (error) {
+    console.error("Error fetching hospital visit:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
