@@ -42,24 +42,12 @@ export const createHospitalVisit = async (req, res) => {
       include: {
         patient:{
           include:{
-            user:{
-              select:{
-                fullName,
-                email,
-                phoneNumber
-              }
-            }
+            user:true
           }
         },
         receptionist: {
           include:{
-            user:{
-              select:{
-                fullName,
-                email,
-                phoneNumber
-              }
-            }
+            user:true
           }
         },
       },
@@ -67,7 +55,6 @@ export const createHospitalVisit = async (req, res) => {
 
     res.status(201).json(newVisit);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -88,7 +75,7 @@ export const getAllHospitalVisits = async (req, res) => {
         },
       },
       orderBy: {
-        visitDate: "desc",
+        createdAt: "desc",
       },
     });
 
