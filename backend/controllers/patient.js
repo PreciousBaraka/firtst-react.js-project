@@ -1,5 +1,5 @@
 import { prisma } from "../config/db.js";
-import { patientEditSchema } from "../schema/user.js";
+import { patientEditSchema } from "../schema/User.js";
 
 export const getPatients = async (req, res) => {
   try {

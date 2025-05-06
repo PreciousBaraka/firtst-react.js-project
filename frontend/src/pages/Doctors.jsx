@@ -198,6 +198,7 @@ const Doctor = () => {
         email: "",
         phoneNumber: "",
         specialization: "",
+        password: "12345678",
       });
       setOpenDoctorModal(false);
     }

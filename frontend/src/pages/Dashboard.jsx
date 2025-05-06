@@ -1,5 +1,5 @@
 import React from "react";
-import DashboardCard from "../components/Dashboard/DashboardCard";
+import DashboardCard from "../components/dashboard/DashboardCard";
 import { Bandage, BriefcaseMedical, Contact, Hospital,} from "lucide-react";
 import { useEffect, useState } from "react";
 

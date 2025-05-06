@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
-import Sidebar from "./components/Sidebar.jsx";
+import Sidebar from "./components/SideBar.jsx";
 import { useState } from "react";
 import TopBar from "./components/TopBar.jsx";
 import { useSelector } from "react-redux";
