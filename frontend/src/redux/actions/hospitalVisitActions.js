@@ -33,7 +33,6 @@ export const createHospitalVisit = (visitData) => async (dispatch) => {
       `/hospital-visits/create?patientId=${visitData.patientId}&receptionistId=${visitData.receptionistId}`,
       {
         reason:visitData.reason,
-        visitDate:visitData.visitDate
       }
     );
 
