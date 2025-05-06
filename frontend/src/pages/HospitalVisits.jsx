@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DataTable from "../components/DataTable";
 import { Trash2, Pencil, Eye } from "lucide-react";
-import { formatDate } from "../lib/utils";
 import { useNavigate } from "react-router";
 import {
   listHospitalVisits,
@@ -23,13 +22,12 @@ function HospitalVisits() {
   const [selectedReceptionistId, setSelectedReceptionistId] = useState("");
   const [visitData, setVisitData] = useState({
     reason: "",
-    visitDate: "",
   });
 
   const { hospitalVisits, loading, success, error } = useSelector(
     (state) => state.hospitalVisit
   );
-
+  
   const { receptionists, patients } = useSelector((state) => state.user);
   useEffect(() => {
     dispatch(listHospitalVisits());
@@ -50,8 +48,7 @@ function HospitalVisits() {
     if (
       !selectedPatientId ||
       !selectedReceptionistId ||
-      !visitData.reason ||
-      !visitData.visitDate
+      !visitData.reason
     ) {
       toast.error("All fields are Required");
       return;
@@ -61,7 +58,6 @@ function HospitalVisits() {
       patientId: selectedPatientId,
       receptionistId: selectedReceptionistId,
       reason: visitData.reason,
-      visitDate: visitData.visitDate,
     };
     dispatch(createHospitalVisit(newVisit));
   };
@@ -96,16 +92,6 @@ function HospitalVisits() {
       ),
     },
     {
-      field: "visitDate",
-      headerName: "Visit Date",
-      width: 150,
-      renderCell: (params) => (
-        <h6 className="text-gray-600 my-auto">
-          {formatDate(params.row?.visitDate)}
-        </h6>
-      ),
-    },
-    {
       field: "action",
       headerName: "Actions",
       width: 180,
@@ -135,8 +121,7 @@ function HospitalVisits() {
       setSelectedPatientId("");
       setSelectedReceptionistId("");
       setVisitData({
-        reason: "",
-        visitDate: "",
+        reason: ""
       });
       setOpenVisitModal(false);
     }
@@ -194,13 +179,6 @@ function HospitalVisits() {
             value={visitData.reason}
             onChange={handleInputChange}
             placeholder="Enter Reason"
-          />
-          <CustomFormItem
-            label="Visit Date"
-            name="visitDate"
-            type="date"
-            value={visitData.visitDate}
-            onChange={handleInputChange}
           />
           <CustomButton type="submit" title="Add Visit" isLoading={loading} />
         </form>
