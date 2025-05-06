@@ -50,7 +50,7 @@ export const registerUser = async (req, res) => {
               email,
               phoneNumber,
               password: hashedPassword,
-              type: UserType.PATIENT,
+              usertype: UserType.PATIENT,
             },
           },
           nationalIdNo,
