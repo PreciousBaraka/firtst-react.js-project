@@ -7,6 +7,8 @@ import HospitalVisits from "./pages/HospitalVisits";
 import TreatmentRecord from "./pages/TreatmentRecord";
 import Receptionist from "./pages/Receptionist";
 import Patients from "./pages/Patients";
+import PatientDetails from "./pages/PatientDetails";
+import DoctorDetails from "./pages/DoctorDetails";
 import Doctors from "./pages/Doctors";
 import PostTreatment from "./pages/PostTreatment";
 import HospitalVisitDetails from "./pages/HospitalVisitDetails";
@@ -25,7 +27,9 @@ function App() {
           <Route path='/treatment-records' element={<TreatmentRecord />} />
           <Route path='/receptionists' element={<Receptionist />} />
           <Route path='/patients' element={<Patients />} />
+          <Route path='/patients/:id' element={<PatientDetails />} />
           <Route path='/doctors' element={<Doctors />} />
+          <Route path='/doctors/:id' element={<DoctorDetails />} />
           <Route path='/post-treatment' element={<PostTreatment />} />
         </Route>
       </Routes>

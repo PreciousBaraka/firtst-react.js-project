@@ -6,6 +6,7 @@ import {
   createUserSuccess,
   fetchRolesSuccess,
   fetchUsersSuccess,
+  fetchUserDetailsSuccess, 
 } from "../slices/userSlices";
 
 export const login = (userData) => async (dispatch) => {
@@ -51,6 +52,26 @@ export const listUsers =
     }
   };
 
+export const getUserDetails =
+  (type, patientId, doctorId, receptionistId) => async (dispatch) => {
+    try {
+      dispatch(loginStart());
+
+      if (type === "patients") {
+        const { data } = await api.get(`/patients/${patientId}`);
+        dispatch(fetchUserDetailsSuccess({ type, userData: data }));
+      } else if (type === "doctors") {
+        const { data } = await api.get(`/doctors/${doctorId}`);
+        dispatch(fetchUserDetailsSuccess({ type, userData: data }));
+      } else if (type === "receptionists") {
+        const { data } = await api.get(`/receptionists/${receptionistId}`);
+        dispatch(fetchUserDetailsSuccess({ type, userData: data }));
+      }
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "An error occurred";
+      dispatch(loginFail(errorMessage));
+    }
+  };
 export const createUser = (type, userData) => async (dispatch) => {
   try {
     dispatch(loginStart());

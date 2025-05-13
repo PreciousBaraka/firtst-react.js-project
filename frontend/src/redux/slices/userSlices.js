@@ -64,6 +64,18 @@ export const userSlice = createSlice({
         state.limit = userData.limit || 10;
       }
     },
+     fetchUserDetailsSuccess: (state, action) => {
+      state.loading = false;
+      const { type, userData } = action.payload; // Expecting type and users in payload
+      state.userDetails = userData;
+      if (type === "patients") {
+        state.patients = userData? [userData] : [];
+      } else if (type === "doctors") {
+        state.doctors = userData? [userData] : [];
+      } else if (type === "receptionists") {
+        state.receptionists = userData? [userData] : [];
+      }
+    },
     createUserSuccess: (state, action) => {
       state.loading = false;
       const { type, data } = action.payload;
@@ -109,6 +121,7 @@ export const {
   createUserSuccess,
   createPatientSuccess,
   resetUserState,
+  fetchUserDetailsSuccess
 } = userSlice.actions;
 
 export default userSlice.reducer;

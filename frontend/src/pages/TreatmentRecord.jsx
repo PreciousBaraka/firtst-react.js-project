@@ -9,6 +9,7 @@ import CustomButton from "../components/CustomButton";
 import { toast } from "react-toastify";
 import { listHospitalVisits } from "../redux/actions/hospitalVisitActions";
 import { listUsers } from "../redux/actions/userActions";
+import { createTreatmentRecord, listTreatmentRecords } from "../redux/actions/treatmentRecordAction";
 
 function TreatmentRecord() {
   const dispatch = useDispatch();
@@ -40,7 +41,7 @@ function TreatmentRecord() {
     dispatch(listHospitalVisits("hospitalVisits"));
     dispatch(listUsers("patients"));
     dispatch(listUsers("doctors"));
-  }, [dispatch]);
+  }, [dispatch,]);
 
   const handleSearchTreatmentRecord = (searchKey) => {
     dispatch(listTreatmentRecords(searchKey));
@@ -56,13 +57,8 @@ function TreatmentRecord() {
       !selectedHospitalVisitId ||
       !selectedDoctortId ||
       !selectedPatientId ||
-      !treatmentData.mobility ||
-      !treatmentData.painLevel ||
-      !treatmentData.status ||
       !treatmentData.symptoms ||
-      !treatmentData.temperature ||
-      !treatmentData.treatmentPlan ||
-      !treatmentData.vitals
+      !treatmentData.treatmentPlan
     ) {
       toast.error("All fields are Required");
       return;
@@ -72,13 +68,8 @@ function TreatmentRecord() {
       patientId: selectedPatientId,
       doctorId: selectedDoctortId,
       hospitalVisitId: selectedHospitalVisitId,
-      mobility: treatmentData.mobility,
-      painLevel: treatmentData.painLevel,
-      status: treatmentData.status,
       symptoms: treatmentData.symptoms,
-      temperature: treatmentData.temperature,
       treatmentPlan: treatmentData.treatmentPlan,
-      vitals: treatmentData.vitals,
     };
     dispatch(createTreatmentRecord(newTreatmentRecord));
   };

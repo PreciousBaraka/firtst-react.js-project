@@ -73,7 +73,11 @@ export const createTreatmentRecord =
       await api.post(`/treatment-records/create?hospitalVisitId=${hospitalVisitId}&doctorId=${doctorId}`, treatmentData);
 
       dispatch(createTreatmentRecordSuccess());
+
+      const {data} = await api.get(`/hospital-visits/${hospitalVisitId}`)
+      dispatch(getHospitalVisitDetailsSuccess(data))
     } catch (error) {
+      console.log("error creating treatment record: ", error)
       dispatch(
         listHospitalVisitsFail(error.response?.data?.message || error.message)
       );

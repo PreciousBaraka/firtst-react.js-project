@@ -12,26 +12,33 @@ export const createTreatmentRecord = async (req, res) => {
       return res.status(400).json({ message: error.details[0].message });
     }
 
-    const {
-      treatmentPlan,
-      symptoms,
-      status,
-    } = value;
+    const { treatmentPlan, symptoms, status } = value;
 
     const { hospitalVisitId, doctorId } = req.query;
+    console.log("doctor id found: ", doctorId)
 
     if (!hospitalVisitId || !doctorId) {
       return res.status(400).json({ message: "Missing required parameters" });
     }
 
     // Ensure all linked entities exist
-    const [hospitalVisit, doctor] = await Promise.all([
-      prisma.hospitalVisit.findUnique({
-        where: { id: hospitalVisitId },
-        include: { patient: true },
-      }),
-      prisma.doctor.findUnique({ where: { id: doctorId } }),
-    ]);
+    // const [hospitalVisit, doctor] = await  Promise.all([
+    //   prisma.hospitalVisit.findUnique({
+    //     where: { id: hospitalVisitId },
+    //     include: { patient: true },
+    //   }),
+    //   prisma.doctor.findUnique({ where: { id: doctorId } }),
+    // ]);
+
+    const hospitalVisit = await prisma.hospitalVisit.findUnique({
+      where: { id: hospitalVisitId },
+      include: { patient: true },
+    });
+
+    const doctor = await prisma.doctor.findUnique({
+      where: { id: doctorId },
+    });
+    // console.log(doctor)
 
     if (!hospitalVisit) {
       return res.status(404).json({ message: "Hospital Visit not found" });

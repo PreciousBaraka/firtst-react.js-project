@@ -140,7 +140,7 @@ const Doctor = () => {
           {/* View */}
           <div
             className="border text-green-400 cursor-pointer p-2 rounded"
-            onClick={() => navigate(`/hospital-visits/${params.row.id}`)}
+            onClick={() => navigate(`/doctors/${params.row.id}`)}
           >
             <Eye />
           </div>

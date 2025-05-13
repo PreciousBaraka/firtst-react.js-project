@@ -31,12 +31,7 @@ export const createTreatmentRecord = (treatmentData) => async (dispatch) => {
 
     await api.post("api/treatment-records/create", {
       symptoms: treatmentData.symptoms,
-      temperature: treatmentData.temperature,
-      mobility: treatmentData.mobility,
       treatmentPlan: treatmentData.treatmentPlan,
-      painLevel: treatmentData.painLevel,
-      status: treatmentData.status,
-      vitals:treatmentData.vitals
     });
 
     dispatch(createTreatmentRecordSuccess());
