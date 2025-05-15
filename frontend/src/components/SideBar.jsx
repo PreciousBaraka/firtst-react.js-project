@@ -19,18 +19,6 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
       iconClass: () => <CalendarCheck />,
     },
     {
-      id: 3,
-      url: "/treatment-records",
-      title: "Treatment Records",
-      iconClass: () => <CalendarCheck />,
-    },
-    {
-      id: 4,
-      url: "/post-treatment",
-      title: "Post Treatment Records",
-      iconClass: () => <PanelsTopLeft />,
-    },
-    {
       id: 5,
       url: "/receptionists",
       title: "Receptionist",

@@ -63,7 +63,6 @@ export const createHospitalVisit = (visitData) => async (dispatch) => {
 };
 
 
-
 // Create a new treatment record
 export const createTreatmentRecord =
   (hospitalVisitId, doctorId, treatmentData) => async (dispatch) => {

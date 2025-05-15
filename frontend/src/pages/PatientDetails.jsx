@@ -10,7 +10,6 @@ const PatientDetails = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { userInfo } = useSelector((state) => state.user);
   const {
     userDetails: patientDetails,
     loading,

@@ -10,7 +10,7 @@ const Home = () => {
           Post Operative Assistance App
         </h1>
         <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl">
-          Streamlining patient recovery by connecting doctors, patients, and healthcare staff with real-time post-treatment care.
+          Streamlining patient recovery by connecting doctors and patients with real-time post-treatment care.
         </p>
         <div className="flex gap-4">
           <Link
@@ -48,7 +48,7 @@ const Home = () => {
             <div className="p-6 bg-white rounded-xl shadow hover:shadow-lg">
               <h3 className="text-xl font-semibold mb-2">Receptionists</h3>
               <p className="text-gray-600">
-                Register patients, manage visits, and coordinate care teams.
+                Register patients, manage visits, and enhance follow-up.
               </p>
             </div>
           </div>
