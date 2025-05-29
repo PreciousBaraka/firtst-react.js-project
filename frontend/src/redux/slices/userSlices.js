@@ -3,8 +3,10 @@ import { createSlice } from "@reduxjs/toolkit";
 const savedUser = localStorage.getItem("Post Operative Assistance-user")
   ? JSON.parse(localStorage.getItem("Post Operative Assistance-user"))
   : null;
+
 const initialState = {
   userInfo: savedUser,
+  userDetails: null,
   loading: false,
   error: null,
   success: false,
@@ -15,6 +17,10 @@ const initialState = {
   totalDoctors: 0,
   totalPatients: 0,
   totalReceptionists: 0,
+  patientQueries: [],
+  loadingPatientQuery: false,
+  patientQueryError: null,
+  doctorPatients: [],
   currentPage: 1,
   totalPages: 0,
   limit: 10,
@@ -43,60 +49,69 @@ export const userSlice = createSlice({
     },
     fetchUsersSuccess: (state, action) => {
       state.loading = false;
-      const { type, userData } = action.payload; // Expecting type and users in payload
+      const { type, userData } = action.payload;
+
+      const users = userData?.data || [];
+      const total = userData?.total || 0;
+      const totalPages = userData?.totalPages || 0;
+      const currentPage = userData?.currentPage || 1;
+      const limit = userData?.limit || 10;
+
       if (type === "patients") {
-        state.patients = userData || [];
-        state.totalPatients = userData.total || 0;
-        state.totalPages = userData.totalPages || 0;
-        state.currentPage = userData.currentPage || 1;
-        state.limit = userData.limit || 10;
+        state.patients = users;
+        state.totalPatients = total;
       } else if (type === "doctors") {
-        state.doctors = userData || [];
-        state.totalDoctors = userData.total || 0;
-        state.totalPages = userData.totalPages || 0;
-        state.currentPage = userData.currentPage || 1;
-        state.limit = userData.limit || 10;
+        state.doctors = users;
+        state.totalDoctors = total;
       } else if (type === "receptionists") {
-        state.receptionists = userData || [];
-        state.totalReceptionists = userData.total || 0;
-        state.totalPages = userData.totalPages || 0;
-        state.currentPage = userData.currentPage || 1;
-        state.limit = userData.limit || 10;
+        state.receptionists = users;
+        state.totalReceptionists = total;
       }
+
+      state.totalPages = totalPages;
+      state.currentPage = currentPage;
+      state.limit = limit;
     },
-     fetchUserDetailsSuccess: (state, action) => {
+    fetchUserDetailsSuccess: (state, action) => {
       state.loading = false;
-      const { type, userData } = action.payload; // Expecting type and users in payload
+      const { type, userData } = action.payload;
       state.userDetails = userData;
+
+      // Update relevant list with only the current user if needed
       if (type === "patients") {
-        state.patients = userData? [userData] : [];
+        const existing = state.patients.find((u) => u.id === userData.id);
+        if (!existing) state.patients.push(userData);
       } else if (type === "doctors") {
-        state.doctors = userData? [userData] : [];
+        const existing = state.doctors.find((u) => u.id === userData.id);
+        if (!existing) state.doctors.push(userData);
       } else if (type === "receptionists") {
-        state.receptionists = userData? [userData] : [];
+        const existing = state.receptionists.find((u) => u.id === userData.id);
+        if (!existing) state.receptionists.push(userData);
       }
     },
     createUserSuccess: (state, action) => {
       state.loading = false;
       const { type, data } = action.payload;
+
       if (type === "doctor") {
-        state.doctors = [...state.doctors, data];
+        state.doctors.push(data);
         state.totalDoctors += 1;
-        state.totalPages = Math.ceil(state.totalDoctors / state.limit);
-        state.success = true;
       } else if (type === "patient") {
-        state.loading = false;
-        state.patients = [...state.patients, data];
+        state.patients.push(data);
         state.totalPatients += 1;
-        state.totalPages = Math.ceil(state.totalPatients / state.limit);
-        state.success = true;
       } else if (type === "receptionist") {
-        state.loading = false;
-        state.receptionists = [...state.receptionists, data];
+        state.receptionists.push(data);
         state.totalReceptionists += 1;
-        state.totalPages = Math.ceil(state.totalReceptionists / state.limit);
-        state.success = true;
       }
+
+      state.totalPages = Math.ceil(
+        (type === "doctor"
+          ? state.totalDoctors
+          : type === "patient"
+          ? state.totalPatients
+          : state.totalReceptionists) / state.limit
+      );
+      state.success = true;
     },
     fetchRolesSuccess: (state, action) => {
       state.loading = false;
@@ -106,6 +121,30 @@ export const userSlice = createSlice({
       state.loading = false;
       state.error = null;
       state.success = false;
+    },
+    createPatientQueryStart(state) {
+      state.loadingPatientQuery = true;
+      state.patientQueryError = null;
+    },
+    createPatientQuerySuccess(state, action) {
+      state.loadingPatientQuery = false;
+      state.patientQueries.push(action.payload);
+    },
+    createPatientQueryFail(state, action) {
+      state.loadingPatientQuery = false;
+      state.patientQueryError = action.payload;
+    },
+    resetCreateQueryStatusAction(state) {
+      state.loadingPatientQuery = false;
+      state.patientQueryError = null;
+    },
+    fetchPatientQueriesSuccess(state, action) {
+      state.patientQueries = action.payload;
+      state.patientQueryError = null;
+    },
+    fetchDoctorPatientsSuccess: (state, action) => {
+      state.loading = false;
+      state.doctorPatients = action.payload;
     },
   },
 });
@@ -117,11 +156,15 @@ export const {
   logoutUser,
   fetchUsersSuccess,
   fetchRolesSuccess,
-  createReceptionistSuccess,
   createUserSuccess,
-  createPatientSuccess,
+  createPatientQueryStart,
+  createPatientQuerySuccess,
+  createPatientQueryFail,
+  resetCreateQueryStatusAction,
+  fetchPatientQueriesSuccess,
   resetUserState,
-  fetchUserDetailsSuccess
+  fetchUserDetailsSuccess,
+  fetchDoctorPatientsSuccess,
 } = userSlice.actions;
 
 export default userSlice.reducer;

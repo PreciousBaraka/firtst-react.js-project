@@ -1,6 +1,7 @@
 import { prisma } from "../config/db.js";
 import { patientEditSchema } from "../schema/User.js";
 
+// GET all patients
 export const getPatients = async (req, res) => {
   try {
     const patients = await prisma.patient.findMany({
@@ -12,23 +13,48 @@ export const getPatients = async (req, res) => {
     res.status(500).json({ message: "Error fetching patients", error });
   }
 };
+
+// GET single patient by ID with hospitalVisits, treatmentRecords, and patientQueries
 export const getPatientById = async (req, res) => {
   const { id } = req.params;
   try {
     const patient = await prisma.patient.findUnique({
       where: { id },
-      include: { user: true },
+      include: {
+        user: true,
+        hospitalVisits: {
+          include: {
+            treatmentRecord: true,
+          },
+        },
+        patientQueries: {
+          include: {
+            treatmentRecord: {
+              select: {
+                treatmentPlan: true,
+              },
+            },
+            doctorResponses: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
     });
+
     if (!patient) {
       return res.status(404).json({ message: "Patient not found" });
     }
+
     res.status(200).json(patient);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Error retrieving patient", error });
   }
 };
 
-
+// PUT update patient info
 export const updatedPatient = async (req, res) => {
   const { id } = req.params;
   const { error, value } = patientEditSchema.validate(req.body);
@@ -59,13 +85,14 @@ export const updatedPatient = async (req, res) => {
           },
         },
         nationalIdNo: value.nationalIdNo || existingPatient.nationalIdNo,
-        age:value.age || existingPatient.age,
+        age: value.age || existingPatient.age,
         address: value.address || existingPatient.address,
         gender: value.gender || existingPatient.gender,
-        dateOfBirth: value.dateOfBirth || existingPatient.dateOfBirth
+        dateOfBirth: value.dateOfBirth || existingPatient.dateOfBirth,
       },
       include: {
-        user: true },
+        user: true,
+      },
     });
 
     res.status(200).json(updatedPatient);

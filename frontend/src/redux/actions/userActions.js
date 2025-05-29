@@ -6,17 +6,27 @@ import {
   createUserSuccess,
   fetchRolesSuccess,
   fetchUsersSuccess,
-  fetchUserDetailsSuccess, 
+  fetchUserDetailsSuccess,
+  createPatientQueryStart,
+  createPatientQuerySuccess,
+  createPatientQueryFail,
+  fetchPatientQueriesSuccess,
+  fetchDoctorPatientsSuccess,
+  resetCreateQueryStatusAction, // << Used to reset query status
 } from "../slices/userSlices";
+
+//AUTH 
 
 export const login = (userData) => async (dispatch) => {
   try {
     dispatch(loginStart());
     const { data } = await api.post("/users/login", userData);
+
     localStorage.setItem(
       "Post Operative Assistance-user",
       JSON.stringify(data)
     );
+
     dispatch(loginSuccess(data));
   } catch (error) {
     const errorMessage = error.response?.data?.message || "An error occurred";
@@ -24,28 +34,18 @@ export const login = (userData) => async (dispatch) => {
   }
 };
 
+// -------------------- USERS --------------------
+
 export const listUsers =
   (type, search = "", page = 1, limit = 10) =>
   async (dispatch) => {
     try {
       dispatch(loginStart());
 
-      if (type === "patients") {
-        const { data } = await api.get(
-          `/patients?search=${search}&page=${page}&limit=${limit}`
-        );
-        dispatch(fetchUsersSuccess({ type, userData: data }));
-      } else if (type === "doctors") {
-        const { data } = await api.get(
-          `/doctors?search=${search}&page=${page}&limit=${limit}`
-        );
-        dispatch(fetchUsersSuccess({ type, userData: data }));
-      } else if (type === "receptionists") {
-        const { data } = await api.get(
-          `/receptionists?search=${search}&page=${page}&limit=${limit}`
-        );
-        dispatch(fetchUsersSuccess({ type, userData: data }));
-      }
+      const url = `/${type}?search=${search}&page=${page}&limit=${limit}`;
+      const { data } = await api.get(url);
+
+      dispatch(fetchUsersSuccess({ type, userData: data }));
     } catch (error) {
       const errorMessage = error.response?.data?.message || "An error occurred";
       dispatch(loginFail(errorMessage));
@@ -57,21 +57,20 @@ export const getUserDetails =
     try {
       dispatch(loginStart());
 
-      if (type === "patients") {
-        const { data } = await api.get(`/patients/${patientId}`);
-        dispatch(fetchUserDetailsSuccess({ type, userData: data }));
-      } else if (type === "doctors") {
-        const { data } = await api.get(`/doctors/${doctorId}`);
-        dispatch(fetchUserDetailsSuccess({ type, userData: data }));
-      } else if (type === "receptionists") {
-        const { data } = await api.get(`/receptionists/${receptionistId}`);
-        dispatch(fetchUserDetailsSuccess({ type, userData: data }));
-      }
+      let url = "";
+      if (type === "patients") url = `/patients/${patientId}`;
+      else if (type === "doctors") url = `/doctors/${doctorId}`;
+      else if (type === "receptionists")
+        url = `/receptionists/${receptionistId}`;
+
+      const { data } = await api.get(url);
+      dispatch(fetchUserDetailsSuccess({ type, userData: data }));
     } catch (error) {
       const errorMessage = error.response?.data?.message || "An error occurred";
       dispatch(loginFail(errorMessage));
     }
   };
+
 export const createUser = (type, userData) => async (dispatch) => {
   try {
     dispatch(loginStart());
@@ -79,22 +78,61 @@ export const createUser = (type, userData) => async (dispatch) => {
       `/users/register?userType=${type}`,
       userData
     );
-    console.log("Created user: ", data);
     dispatch(createUserSuccess({ type, data }));
   } catch (error) {
-    console.log("creating user: ", error);
     const errorMessage = error.response?.data?.message || "An error occurred";
     dispatch(loginFail(errorMessage));
   }
 };
 
+//ROLES 
+
 export const listRoles = () => async (dispatch) => {
   try {
     dispatch(loginStart());
-
     const { data } = await api.get("/roles");
-
     dispatch(fetchRolesSuccess(data));
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || "An error occurred";
+    dispatch(loginFail(errorMessage));
+  }
+};
+
+//  PATIENT QUERIES 
+
+export const createPatientQuery = (queryData) => async (dispatch) => {
+  try {
+    dispatch(createPatientQueryStart());
+    const { data } = await api.post("/patient-queries", queryData);
+    dispatch(createPatientQuerySuccess(data));
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || "An error occurred";
+    dispatch(createPatientQueryFail(errorMessage));
+  }
+};
+
+export const fetchPatientQueries = (patientId) => async (dispatch) => {
+  try {
+    dispatch(loginStart());
+    const { data } = await api.get(`/patient-queries/patient/${patientId}`);
+    dispatch(fetchPatientQueriesSuccess(data));
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || "An error occurred";
+    dispatch(loginFail(errorMessage));
+  }
+};
+
+export const resetCreateQueryStatus = () => (dispatch) => {
+  dispatch(resetCreateQueryStatusAction());
+};
+
+//DOCTOR
+
+export const getDoctorPatients = (doctorId) => async (dispatch) => {
+  try {
+    dispatch(loginStart());
+    const { data } = await api.get(`/doctors/${doctorId}/patients`);
+    dispatch(fetchDoctorPatientsSuccess(data));
   } catch (error) {
     const errorMessage = error.response?.data?.message || "An error occurred";
     dispatch(loginFail(errorMessage));
