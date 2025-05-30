@@ -86,12 +86,35 @@ export const getTreatmentRecordById = async (req, res) => {
   try {
     const { id } = req.params;
 
+    console.log("treatment record id: ", id)
+
     const treatmentRecord = await prisma.treatmentRecord.findUnique({
       where: { id },
       include: {
         hospitalVisit: true,
+        doctor: {
+          include: {
+            user: true
+          }
+        },
+        treatmenQueries: {
+          include: {
+            treatmentQueryResponses: {
+              include: {
+                treatmentQuery: {
+                  include: {
+                    treatmentRecord: true,
+                  },
+                }
+                
+              },
+            },
+          },
+        }
       },
     });
+
+    console.log("treatment record found: ", treatmentRecord)
 
     if (!treatmentRecord) {
       return res.status(404).json({ message: "Treatment record not found" });
@@ -99,7 +122,7 @@ export const getTreatmentRecordById = async (req, res) => {
 
     res.status(200).json(treatmentRecord);
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -130,6 +153,119 @@ export const updateTreatmentRecord = async (req, res) => {
     res.status(200).json(updatedRecord);
   } catch (err) {
     console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+// Create Treatment Query (for patient)
+export const createTreatmentQuery = async (req, res) => {
+  try {
+    const { treatmentRecordId, title, description } = req.body;
+
+    if (!treatmentRecordId || !title || !description) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    // Check if treatment record exists
+    const treatmentRecord = await prisma.treatmentRecord.findUnique({
+      where: { id: treatmentRecordId },
+    });
+
+    if (!treatmentRecord) {
+      return res.status(404).json({ message: "Treatment record not found" });
+    }
+
+    const newQuery = await prisma.treatmentQuery.create({
+      data: {
+        treatmentRecordId,
+        title,
+        description,
+      },
+      include: {
+        treatmentQueryResponses: true,
+      },
+    });
+
+    res.status(201).json(newQuery);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Doctor replies to a treatment query
+export const replyTreatmentQuery = async (req, res) => {
+  try {
+    const { treatmentQueryId, doctorId, response } = req.body;
+
+    if (!treatmentQueryId || !doctorId || !response) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    // Check if treatment query exists
+    const treatmentQuery = await prisma.treatmentQuery.findUnique({
+      where: { id: treatmentQueryId },
+    });
+
+    if (!treatmentQuery) {
+      return res.status(404).json({ message: "Treatment query not found" });
+    }
+
+    // Check if doctor exists
+    const doctor = await prisma.doctor.findUnique({
+      where: { id: doctorId },
+    });
+
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    const newResponse = await prisma.treatmentQueryResponse.create({
+      data: {
+        treatmentQueryId,
+        doctorId,
+        responseMessage: response,
+      },
+    });
+
+    res.status(201).json(newResponse);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+// List all treatment queries for a specific doctor
+export const listQueriesByDoctor = async (req, res) => {
+  try {
+    const { doctorId } = req.params ;
+
+    if (!doctorId) {
+      return res.status(400).json({ message: "Missing doctorId parameter" });
+    }
+
+    // Find all treatment queries where the doctor has responded
+    const queries = await prisma.treatmentQuery.findMany({
+      where: {
+        treatmentQueryResponses: {
+          some: {
+            doctorId: doctorId,
+          },
+        },
+      },
+      include: {
+        treatmentQueryResponses: {
+          where: { doctorId: doctorId },
+        },
+        treatmentRecord: true,
+      },
+    });
+
+    res.status(200).json(queries);
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

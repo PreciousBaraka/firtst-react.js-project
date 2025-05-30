@@ -172,6 +172,7 @@ function Patients() {
         address: "",
         gender: "",
         dateOfBirth: "",
+        password: "12345678"
       });
       setOpenPatientsModal(false);
     }

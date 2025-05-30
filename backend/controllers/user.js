@@ -11,6 +11,7 @@ import { generateToken } from "../utils/jwt.js";
 
 export const registerUser = async (req, res) => {
   const { userType } = req.query;
+  console.log(req.body)
 
   if (!["doctor", "patient", "receptionist"].includes(userType)) {
     return res.status(400).json({ message: "Invalid user type" });

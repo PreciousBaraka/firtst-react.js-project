@@ -24,6 +24,7 @@ const initialState = {
   currentPage: 1,
   totalPages: 0,
   limit: 10,
+  createdQuery: false,
 };
 
 export const userSlice = createSlice({
@@ -48,29 +49,19 @@ export const userSlice = createSlice({
       localStorage.removeItem("Post Operative Assistance-user");
     },
     fetchUsersSuccess: (state, action) => {
+      console.log("Fetched users:", action.payload);
       state.loading = false;
       const { type, userData } = action.payload;
 
-      const users = userData?.data || [];
-      const total = userData?.total || 0;
-      const totalPages = userData?.totalPages || 0;
-      const currentPage = userData?.currentPage || 1;
-      const limit = userData?.limit || 10;
+      const users = userData || [];
 
       if (type === "patients") {
         state.patients = users;
-        state.totalPatients = total;
       } else if (type === "doctors") {
         state.doctors = users;
-        state.totalDoctors = total;
       } else if (type === "receptionists") {
         state.receptionists = users;
-        state.totalReceptionists = total;
       }
-
-      state.totalPages = totalPages;
-      state.currentPage = currentPage;
-      state.limit = limit;
     },
     fetchUserDetailsSuccess: (state, action) => {
       state.loading = false;
@@ -125,10 +116,11 @@ export const userSlice = createSlice({
     createPatientQueryStart(state) {
       state.loadingPatientQuery = true;
       state.patientQueryError = null;
+      state.createdQuery = false;
     },
-    createPatientQuerySuccess(state, action) {
+    createPatientQuerySuccess(state) {
       state.loadingPatientQuery = false;
-      state.patientQueries.push(action.payload);
+      state.createdQuery = true;
     },
     createPatientQueryFail(state, action) {
       state.loadingPatientQuery = false;

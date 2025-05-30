@@ -14,6 +14,7 @@ export default function DataTable({
   hideSearch = false,
   placeholder = "",
 }) {
+  console.log("DataTable rendered with data:", data);
   const [search, setSearch] = useState("");
   const handleSearchSubmit = (e) => {
     if (!onSearch) return;

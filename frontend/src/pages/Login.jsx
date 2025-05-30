@@ -46,11 +46,12 @@ console.log(userInfo);
     
     if (role === "PATIENT" && userInfo.user.patientId) {
       navigate(`/patient-account/${userInfo.user.patientId}`);
-    } else if (role === "DOCTOR" && userInfo.user.doctorId) {
-      navigate(`/doctor-account/${userInfo.user.doctorId}`);
     } else {
       navigate("/dashboard"); // Fallback for other roles (e.g., Manager, Receptionist)
     }
+    // else if (role === "DOCTOR" && userInfo.user.doctorId) {
+    //   navigate(`/doctor-account/${userInfo.user.doctorId}`);
+    // } 
   }
 }, [userInfo, navigate]);
 

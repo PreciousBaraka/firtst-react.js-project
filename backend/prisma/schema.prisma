@@ -115,6 +115,7 @@ model TreatmentRecord {
   status          TreatmentStatus @default(ACTIVE)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
+  treatmenQueries TreatmentQuery[]
 
   hospitalVisit       HospitalVisit         @relation(fields: [hospitalVisitId], references: [id])
   doctor              Doctor                @relation(fields: [doctorId], references: [id])
@@ -123,6 +124,34 @@ model TreatmentRecord {
 
   @@index([id])
   @@map("treatment_records")
+}
+
+model TreatmentQuery {
+  id                    String               @id @default(uuid())
+  treatmentRecordId     String
+  title                 String
+  description           String
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  treatmentRecord       TreatmentRecord      @relation(fields: [treatmentRecordId], references: [id])
+  treatmentQueryResponses TreatmentQueryResponse[]
+
+  @@map("treatment_queries")
+  @@index([id])
+}
+
+model TreatmentQueryResponse {
+  id              String   @id @default(uuid())
+  treatmentQueryId String
+  doctorId        String
+  responseMessage String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  treatmentQuery TreatmentQuery @relation(fields: [treatmentQueryId], references: [id])
+
+  @@index([id])
+  @@map("treatment_query_responses")
 }
 
 model PatientQuery {

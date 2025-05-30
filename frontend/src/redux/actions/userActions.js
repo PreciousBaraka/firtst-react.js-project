@@ -45,6 +45,8 @@ export const listUsers =
       const url = `/${type}?search=${search}&page=${page}&limit=${limit}`;
       const { data } = await api.get(url);
 
+      console.log("Fetched users:", data);
+
       dispatch(fetchUsersSuccess({ type, userData: data }));
     } catch (error) {
       const errorMessage = error.response?.data?.message || "An error occurred";
@@ -103,7 +105,21 @@ export const listRoles = () => async (dispatch) => {
 export const createPatientQuery = (queryData) => async (dispatch) => {
   try {
     dispatch(createPatientQueryStart());
-    const { data } = await api.post("/patient-queries", queryData);
+    const { data } = await api.post("/treatment-records/create-query", queryData);
+    dispatch(createPatientQuerySuccess(data));
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || "An error occurred";
+    dispatch(createPatientQueryFail(errorMessage));
+  }
+};
+
+export const createPatientQueryResponse = (queryData) => async (dispatch) => {
+  try {
+    dispatch(createPatientQueryStart());
+    const { data } = await api.post(
+      "/treatment-records/reply-query",
+      queryData
+    );
     dispatch(createPatientQuerySuccess(data));
   } catch (error) {
     const errorMessage = error.response?.data?.message || "An error occurred";
