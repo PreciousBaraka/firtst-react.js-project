@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import DataTable from "../components/DataTable";
 import { Trash2, Pencil, Eye } from "lucide-react";
 import { formatDate, toCapitalize } from "../lib/utils";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { listUsers, createUser } from "../redux/actions/userActions";
 import Modal from "../components/UI/Modal";
 import CustomFormItem from "../components/CustomFormItem";
@@ -148,9 +148,9 @@ function Patients() {
           <div className="border text-blue-300 cursor-pointer p-2 rounded">
             <Pencil onClick={() => {}} />
           </div>
-          <div className="border text-green-400 cursor-pointer p-2 rounded">
-            <Eye onClick={() => navigate(`/patients/${params.row.id}`)} />
-          </div>
+          <Link to={`/patients/${params.row.id}`} className="border text-green-400 cursor-pointer p-2 rounded">
+            <Eye  />
+          </Link>
           <div
             className="border text-red-400 cursor-pointer p-2 rounded"
             onClick={() => {}}

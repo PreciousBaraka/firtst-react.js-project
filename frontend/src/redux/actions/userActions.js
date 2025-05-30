@@ -12,7 +12,8 @@ import {
   createPatientQueryFail,
   fetchPatientQueriesSuccess,
   fetchDoctorPatientsSuccess,
-  resetCreateQueryStatusAction, // << Used to reset query status
+  resetCreateQueryStatusAction,
+  fetchStatsSuccess, // << Used to reset query status
 } from "../slices/userSlices";
 
 //AUTH 
@@ -149,6 +150,17 @@ export const getDoctorPatients = (doctorId) => async (dispatch) => {
     dispatch(loginStart());
     const { data } = await api.get(`/doctors/${doctorId}/patients`);
     dispatch(fetchDoctorPatientsSuccess(data));
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || "An error occurred";
+    dispatch(loginFail(errorMessage));
+  }
+};
+
+export const getStats = () => async (dispatch) => {
+  try {
+    dispatch(loginStart());
+    const { data } = await api.get(`/users/stats`);
+    dispatch(fetchStatsSuccess(data));
   } catch (error) {
     const errorMessage = error.response?.data?.message || "An error occurred";
     dispatch(loginFail(errorMessage));

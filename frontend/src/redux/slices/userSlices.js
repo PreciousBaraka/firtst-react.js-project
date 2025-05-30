@@ -25,6 +25,7 @@ const initialState = {
   totalPages: 0,
   limit: 10,
   createdQuery: false,
+  stats: null,
 };
 
 export const userSlice = createSlice({
@@ -138,6 +139,10 @@ export const userSlice = createSlice({
       state.loading = false;
       state.doctorPatients = action.payload;
     },
+    fetchStatsSuccess: (state, action) => {
+      state.loading = false;
+      state.stats = action.payload;
+    }
   },
 });
 
@@ -157,6 +162,7 @@ export const {
   resetUserState,
   fetchUserDetailsSuccess,
   fetchDoctorPatientsSuccess,
+  fetchStatsSuccess
 } = userSlice.actions;
 
 export default userSlice.reducer;

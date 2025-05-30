@@ -12,6 +12,7 @@ const TreatmentDetailsPage = () => {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [openedReply, setOpenedReply] = useState(null)
 
   const [responseMessage, setResponseMessage] = useState("");
 
@@ -182,7 +183,10 @@ return (
                       </ul>
                     </div>
                   )}
-                {userInfo?.user?.doctorId && (
+                <div className="w-full flex justify-end my-2">
+                  <button className='bg-blue-400 text-white rounded-md text-sm px-2' onClick={() => setOpenedReply(query.id)}>Show Reply</button>
+                </div>
+                {userInfo?.user?.doctorId && openedReply === query.id && (
                   <div className='bg-white mt-8 p-6 rounded-lg shadow'>
                     <h3 className='text-lg font-semibold text-blue-700 mb-4'>
                       Reply to Query

@@ -29,12 +29,12 @@ const PatientDetails = () => {
     }
   }, [error]);
 
-  useEffect(() => {
-    if (!loading && !patientDetails && !error) {
-      toast.error("Patient not found.");
-      navigate("/patients");
-    }
-  }, [patientDetails, loading, error, navigate]);
+  // useEffect(() => {
+  //   if (!loading && !patientDetails && !error) {
+  //     toast.error("Patient not found.");
+  //     navigate("/patients");
+  //   }
+  // }, [patientDetails, loading, error, navigate]);
 
   if (loading) return <p className="text-center text-gray-600">Loading...</p>;
   if (error) return <p className="text-center text-gray-600">{error}</p>;

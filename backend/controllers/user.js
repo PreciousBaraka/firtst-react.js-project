@@ -269,3 +269,50 @@ export const changeUserAccess = async (req, res) => {
     return res.status(500).json({ message: "Error deactivating user" });
   }
 };
+
+
+// Controller to fetch dashboard statistics
+export const getDashboardStats = async (req, res) => {
+  try {
+    // Count users by type
+    const [receptionists, doctors, patients] = await Promise.all([
+      prisma.receptionist.count(),
+      prisma.doctor.count(),
+      prisma.patient.count(),
+    ]);
+
+    // Count queries and replies
+    const [totalPatientQueries, totalTreatmentQueries, totalDoctorReplies, totalTreatmentReplies] = await Promise.all([
+      prisma.patientQuery.count(),
+      prisma.treatmentQuery.count(),
+      prisma.doctorResponse.count(),
+      prisma.treatmentQueryResponse.count(),
+    ]);
+
+    // Get 5 most recent treatments
+    const recentTreatments = await prisma.treatmentRecord.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 5,
+      include: {
+        doctor: {
+          include: { user: true }
+        },
+        hospitalVisit: true,
+      },
+    });
+
+    res.json({
+      totalReceptionists: receptionists,
+      totalDoctors: doctors,
+      totalPatients: patients,
+      totalPatientQueries,
+      totalTreatmentQueries,
+      totalDoctorReplies,
+      totalTreatmentReplies,
+      recentTreatments,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch dashboard stats" });
+  }
+};
