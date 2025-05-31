@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"; 
+import React, { useEffect } from "react";  
 import { useParams, useNavigate, Link } from "react-router-dom";
 import moment from "moment";
 import { useSelector, useDispatch } from "react-redux";
@@ -29,13 +29,6 @@ const PatientDetails = () => {
     }
   }, [error]);
 
-  // useEffect(() => {
-  //   if (!loading && !patientDetails && !error) {
-  //     toast.error("Patient not found.");
-  //     navigate("/patients");
-  //   }
-  // }, [patientDetails, loading, error, navigate]);
-
   if (loading) return <p className="text-center text-gray-600">Loading...</p>;
   if (error) return <p className="text-center text-gray-600">{error}</p>;
   if (!patientDetails)
@@ -52,7 +45,7 @@ const PatientDetails = () => {
   const { fullName, email, phoneNumber } = user;
 
   const totalHospitalVisits = hospitalVisits.length;
-  const totalTreatmentRecords = hospitalVisits.length;  // fixed typo from 'lengt'
+  const totalTreatmentRecords = hospitalVisits.length;  
 
   return (
     <section className='p-4 bg-white rounded shadow'>
@@ -158,18 +151,6 @@ const PatientDetails = () => {
                     </div>
                   </>
                 )}
-                {/* {visit.treatmentRecords?.length ? (
-                      <ul className="list-disc ml-5 space-y-1 text-sm text-gray-700">
-                        {visit.treatmentRecords.map((tr) => (
-                          <li key={tr.id}>
-                            Plan: {tr.treatmentPlan} — Status:{" "}
-                            <span className="font-medium">{tr.status}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-xs text-gray-400">No treatments recorded for this visit.</p>
-                    )} */}
               </li>
             ))}
           </ul>
@@ -188,7 +169,6 @@ const PatientDetails = () => {
                   key={visit.treatmentRecord.id}
                   className='bg-white p-3 shadow rounded flex flex-col md:flex-row md:items-center justify-between'>
                   <div>
-                    {/* Removed Treatment ID display */}
                     <p className='text-sm text-gray-600'>
                       <strong>Visit Date:</strong>{" "}
                       {moment(visit.visitDate).format("MMM Do YYYY")}
@@ -204,15 +184,6 @@ const PatientDetails = () => {
                       }
                       className='bg-green-600 text-white px-3 py-1 text-sm rounded hover:bg-green-700'>
                       View Treatment
-                    </button>
-                    <button
-                      onClick={() =>
-                        navigate(
-                          `/treatment-records/${visit.treatmentRecord.id}/follow-up`
-                        )
-                      }
-                      className='bg-purple-600 text-white px-3 py-1 text-sm rounded hover:bg-purple-700'>
-                      Follow Up Logs
                     </button>
                   </div>
                 </li>

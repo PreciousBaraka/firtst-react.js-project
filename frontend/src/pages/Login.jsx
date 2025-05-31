@@ -8,8 +8,6 @@ import { login } from "../redux/actions/userActions";
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const userState = useSelector((state) => state.user);
-  // console.log("userState from Redux:", userState);
 
   const { loading, error, userInfo } = useSelector((state) => state.user);
 
@@ -39,38 +37,38 @@ const Login = () => {
 
     dispatch(login(userData));
   };
-console.log(userInfo);
-  useEffect(() => { 
-  if (userInfo) {
-    const role = userInfo.user.role;
-    
-    if (role === "PATIENT" && userInfo.user.patientId) {
-      navigate(`/patient-account/${userInfo.user.patientId}`);
-    } else {
-      navigate("/dashboard"); // Fallback for other roles (e.g., Manager, Receptionist)
-    }
-    // else if (role === "DOCTOR" && userInfo.user.doctorId) {
-    //   navigate(`/doctor-account/${userInfo.user.doctorId}`);
-    // } 
-  }
-}, [userInfo, navigate]);
 
+  useEffect(() => {
+    if (userInfo) {
+      const role = userInfo.user.role;
+
+      if (role === "PATIENT" && userInfo.user.patientId) {
+        navigate(`/patient-account/${userInfo.user.patientId}`);
+      } else {
+        navigate("/dashboard");
+      }
+    }
+  }, [userInfo, navigate]);
 
   return (
-    <div className="h-screen w-full bg-gray-100 flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-200 via-blue-100 to-white px-4">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md bg-white rounded-md p-6 shadow-lg"
+        className="w-full max-w-md bg-white rounded-2xl p-8 shadow-2xl
+                   border border-blue-200
+                   hover:shadow-blue-400 transition-shadow duration-300"
       >
-        <h2 className="text-2xl font-bold text-center text-blue-700 mb-6">
-          Login to Post Operative Assistance App
+        <h2 className="text-3xl font-extrabold text-blue-700 mb-8 text-center">
+          Welcome Back
         </h2>
 
         {loading && (
-          <p className="text-center text-blue-500 mb-3">Logging in...</p>
+          <p className="text-center text-blue-500 mb-4 font-medium animate-pulse">
+            Logging in...
+          </p>
         )}
         {(validationError || error) && (
-          <p className="text-red-500 text-sm bg-red-100 p-2 rounded-md mb-4 text-center">
+          <p className="text-red-600 text-sm bg-red-100 p-3 rounded-md mb-6 text-center font-semibold">
             {validationError || error}
           </p>
         )}
@@ -80,7 +78,10 @@ console.log(userInfo);
           name="email"
           value={userData.email}
           onChange={handleChange}
-          placeholder="Type your email"
+          placeholder="Enter your email"
+          inputClassName="border border-gray-300 rounded-lg px-4 py-3
+                          focus:outline-none focus:ring-2 focus:ring-blue-400
+                          transition"
         />
 
         <CustomFormItem
@@ -89,11 +90,21 @@ console.log(userInfo);
           name="password"
           value={userData.password}
           onChange={handleChange}
-          placeholder="********"
+          placeholder="Enter your password"
+          inputClassName="border border-gray-300 rounded-lg px-4 py-3
+                          focus:outline-none focus:ring-2 focus:ring-blue-400
+                          transition"
         />
 
-        <div className="mt-4">
-          <CustomButton type="submit" title="Login" />
+        <div className="mt-8">
+          <CustomButton
+            type="submit"
+            title={loading ? "Logging in..." : "Login"}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white
+                       font-semibold py-3 rounded-lg shadow-lg
+                       transition-colors duration-300"
+            disabled={loading}
+          />
         </div>
       </form>
     </div>
